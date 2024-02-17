@@ -1,0 +1,57 @@
+import { ref } from 'vue'
+import { UserApi } from '@simple-oj-frontend/api'
+import { Validator } from '@simple-oj-frontend/shared'
+import { message } from '../common/common'
+
+export function useVerification(initTime = 60) {
+  const isVerifyBtnDisabled = ref(false)
+  const sleepTime = ref(initTime)
+  const verifyBtnText = ref('获取验证码')
+
+  const sendVerification = async (email: string) => {
+    if (!email || !Validator.isEmail(email)) {
+      message({
+        message: '邮箱错误',
+        type: 'error',
+      })
+      return
+    }
+
+    isVerifyBtnDisabled.value = true
+
+    const timerId = setInterval(() => {
+      if (sleepTime.value > 0) {
+        sleepTime.value--
+        verifyBtnText.value = `发送中 ${sleepTime.value}`
+      } else {
+        isVerifyBtnDisabled.value = false
+        verifyBtnText.value = '获取验证码'
+        sleepTime.value = 5
+        clearInterval(timerId)
+      }
+    }, 1000)
+
+    const res = await UserApi.sendVerification(email)
+
+    if (res.code === 0) {
+      message({
+        message: '请求已发送',
+      })
+    } else if (res.code === 1010) {
+      message({
+        message: '验证码已发送',
+      })
+    } else {
+      message({
+        message: '请求发送失败',
+        type: 'error',
+      })
+    }
+  }
+
+  return {
+    isVerifyBtnDisabled,
+    verifyBtnText,
+    sendVerification,
+  }
+}
