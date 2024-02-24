@@ -24,7 +24,7 @@
             }}</router-link>
           </div>
           <div v-else-if="key === 'tag'" class="tag">
-            <el-tag v-for="tag in row.tag" :key="tag" size="mini">{{
+            <el-tag v-for="tag in row.tag" :key="tag" size="small">{{
               tag
             }}</el-tag>
           </div>

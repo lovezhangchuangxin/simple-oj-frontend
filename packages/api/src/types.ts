@@ -7,7 +7,7 @@ export interface ResponseData<T> {
   /**
    * 状态消息
    */
-  message: string
+  msg: string
   /**
    * 数据
    */

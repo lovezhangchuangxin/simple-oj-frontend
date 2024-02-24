@@ -7,7 +7,7 @@
         <img :src="hustpng" alt="hust-icon" class="hust-logo" />
         <el-row>
           <el-text class="mx-1" type="primary" size="large">
-            HUST OJ, the best online judge system
+            Simple OJ, a simple online judge system
           </el-text>
         </el-row>
       </div>
@@ -275,15 +275,16 @@ const onSubmit = (formEle?: FormInstance) => {
             }
           : { email: loginForm.usernameOrEmail, password: loginForm.password }
         const res = await UserApi.login(params)
+
         if (res.code === 0) {
           message({
-            message: res.message,
+            message: res.msg,
           })
           localStorage.setItem('token', res.data)
           window.location.href = '/'
         } else {
           message({
-            message: res.message,
+            message: res.msg,
             type: 'error',
           })
           return false
@@ -295,12 +296,12 @@ const onSubmit = (formEle?: FormInstance) => {
         )
         if (res.code === 0) {
           message({
-            message: res.message,
+            message: res.msg,
           })
           setFormType('login')
         } else {
           message({
-            message: res.message,
+            message: res.msg,
             type: 'error',
           })
           return false
