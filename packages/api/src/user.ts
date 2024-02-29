@@ -51,6 +51,27 @@ export class UserApi {
       | Pick<UserInfo, 'username' | 'password'>
       | Pick<UserInfo, 'email' | 'password'>,
   ) {
-    return req<string>('POST', '/user/login', user)
+    return req<{
+      token: string
+      user: Omit<UserInfo, 'password'>
+    }>('POST', '/user/login', user)
+  }
+
+  /**
+   * 获取用户信息
+   */
+  public static getUserInfo() {
+    return req<Omit<UserInfo, 'password'>>('GET', '/user/info')
+  }
+
+  /**
+   * 上传文件
+   */
+  public static uploadFile(file: File) {
+    const formData = new FormData()
+    formData.append('file', file)
+    return req<string>('POST', '/user/avatar', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    })
   }
 }

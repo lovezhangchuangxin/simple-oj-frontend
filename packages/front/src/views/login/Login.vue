@@ -130,6 +130,8 @@ import { useState } from '@/utils/hooks/useState'
 import { useVerification } from '@/utils/hooks/useVerification'
 import { UserApi } from '@simple-oj-frontend/api'
 import { Validator } from '@simple-oj-frontend/shared'
+import { useUserStore } from '@/utils/store'
+import { useRouter } from 'vue-router'
 
 const [formType, setFormType] = useState<'login' | 'register'>('login')
 const changeFormType = () => {
@@ -262,6 +264,9 @@ const registerRules = reactive<FormRules<typeof registerForm>>({
   verification: [{ validator: validateVerification, trigger: 'blur' }],
 })
 
+const userStore = useUserStore()
+const router = useRouter()
+
 const onSubmit = (formEle?: FormInstance) => {
   if (!formEle) return
 
@@ -280,8 +285,10 @@ const onSubmit = (formEle?: FormInstance) => {
           message({
             message: res.msg,
           })
-          localStorage.setItem('token', res.data)
-          window.location.href = '/'
+          const { token, user } = res.data
+          localStorage.setItem('token', token)
+          userStore.setUserInfo(user)
+          router.push('/')
         } else {
           message({
             message: res.msg,

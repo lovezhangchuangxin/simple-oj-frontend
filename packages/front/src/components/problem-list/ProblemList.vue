@@ -11,15 +11,16 @@
         <template #default="{ row }">
           <div v-if="key === 'status'" class="status">
             <el-icon v-if="row.status === 0"><SemiSelect /></el-icon>
-            <el-icon v-else-if="row.status === 1"
+            <!-- <el-icon v-else-if="row.status === 1"
               ><CloseBold color="red"
-            /></el-icon>
+            /></el-icon> -->
             <el-icon v-else-if="row.status === 2"
               ><Select color="green"
             /></el-icon>
           </div>
+          <div v-else-if="key === 'id'" class="id">{{ row.id }}</div>
           <div v-else-if="key === 'title'" class="title">
-            <router-link :to="`/problem/${row.pid}`">{{
+            <router-link :to="`/problem/solve/${row.id}`">{{
               row.title
             }}</router-link>
           </div>
@@ -46,17 +47,17 @@
 </template>
 
 <script setup lang="ts">
-import { CloseBold, Select, SemiSelect } from '@element-plus/icons-vue'
+import { Select, SemiSelect } from '@element-plus/icons-vue'
 
-interface ProblemItem {
+export interface ProblemShowItem {
   /**
    * 0: 未做，1：没通过，2：通过
    */
-  status: number
+  status: 0 | 2
   /**
    * 题目 id
    */
-  pid: string
+  id: number
   /**
    * 题目标题
    */
@@ -64,7 +65,7 @@ interface ProblemItem {
   /**
    * 题目标签
    */
-  tag: string[]
+  tag: string
   /**
    * 题目难度
    */
@@ -79,14 +80,14 @@ interface PronblemListProps {
   /**
    * 表格数据
    */
-  data: ProblemItem[]
+  data: ProblemShowItem[]
 }
 
 defineProps<PronblemListProps>()
 
 const TableHeadNameMap = {
   status: '状态',
-  pid: '题号',
+  id: '题号',
   title: '标题',
   tag: '标签',
   difficulty: '难度',
@@ -95,7 +96,7 @@ const TableHeadNameMap = {
 
 const TableHeadWidthMap = {
   status: 80,
-  pid: 100,
+  id: 100,
   title: 250,
   tag: 250,
   difficulty: 100,

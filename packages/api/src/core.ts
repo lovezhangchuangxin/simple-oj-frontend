@@ -4,7 +4,7 @@ import { DafaultRequestMethod, ResponseData } from './types'
 // 创建 axios 实例
 export const instance = axios.create({
   baseURL: `http://${import.meta.env.HUST_HOST}:${import.meta.env.HUST_PORT}`,
-  timeout: 5000,
+  timeout: 15000,
 })
 
 // 请求拦截器
@@ -52,10 +52,15 @@ export const req = async <T>(
     method,
   }
 
+  data =
+    config.headers!['Content-Type'] === 'application/json' && method !== 'GET'
+      ? JSON.stringify(data)
+      : data
+
   if (method === 'GET' || method === 'DELETE') {
-    config.params = JSON.stringify(data)
+    config.params = data
   } else {
-    config.data = JSON.stringify(data)
+    config.data = data
   }
 
   return (await instance(url, config)).data

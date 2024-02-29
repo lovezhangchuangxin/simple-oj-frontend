@@ -26,10 +26,12 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import hustpng from '@/assets/images/hust.png'
 import AvatarBox from '@/components/avatar-box/AvatarBox.vue'
+import { UserApi } from '@simple-oj-frontend/api'
+import { useUserStore } from './utils/store'
 
 const route = useRoute()
 const router = useRouter()
@@ -43,6 +45,27 @@ const isFooterShow = computed(() => {
 const handleSelect = (key: string) => {
   router.push(key)
 }
+
+const userStore = useUserStore()
+
+onMounted(() => {
+  // 初次加载时，请求用户信息
+  const token = localStorage.getItem('token')
+  if (!token) return
+
+  UserApi.getUserInfo().then((res) => {
+    if (res.code !== 0) {
+      router.replace('/login')
+      return
+    }
+
+    userStore.setUserInfo(res.data)
+
+    if (route.path === '/login') {
+      router.replace('/')
+    }
+  })
+})
 </script>
 
 <style scoped lang="less">

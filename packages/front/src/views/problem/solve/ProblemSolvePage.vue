@@ -4,16 +4,35 @@
       <pane size="45">
         <el-scrollbar>
           <div class="viewer-wrapper" style="min-width: 400px; overflow: auto">
-            <MdViewer :value="value"></MdViewer>
+            <MdViewer :value="content"></MdViewer>
           </div>
         </el-scrollbar>
       </pane>
       <pane size="55">
         <splitpanes horizontal>
-          <pane>
-            <MonacoEditor v-model="code" />
+          <pane size="100">
+            <CodeEditor v-model="code" v-model:lang="lang" />
           </pane>
-          <pane>3</pane>
+          <pane size="30">
+            <el-button type="primary" @click="submitCode" :loading="loading"
+              >提交</el-button
+            >
+            <div class="result">
+              <div
+                class="result-item"
+                v-for="(result, index) in results"
+                :key="index"
+                :style="{ backgroundColor: statusColorMap[result.status] }"
+              >
+                <div>
+                  <h4>
+                    {{ CodeExecuteStatus[result.status] }}
+                  </h4>
+                  <p>{{ result.time }}ms {{ result.memory }}MB</p>
+                </div>
+              </div>
+            </div>
+          </pane>
         </splitpanes>
       </pane>
     </splitpanes>
@@ -21,60 +40,75 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watchEffect } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { Splitpanes, Pane } from 'splitpanes'
 import 'splitpanes/dist/splitpanes.css'
 import MdViewer from '@/components/md-viewer/MdViewer.vue'
-import MonacoEditor from '@/components/monaco-editor/MonacoEditor.vue'
+import CodeEditor from '@/components/monaco-editor/CodeEditor.vue'
+import {
+  LANGUAGE_TYPE_MAP,
+  LanguageName,
+} from '@/components/monaco-editor/constant'
+import { generateMd } from '../create/generateMd'
+import {
+  CodeExecuteResult,
+  CodeExecuteStatus,
+  ProblemApi,
+} from '@simple-oj-frontend/api'
+import { message } from '@/utils/common/common'
+// import MonacoEditor from '@/components/monaco-editor/MonacoEditor.vue'
 
 const route = useRoute()
-const pname = ref()
 
-watchEffect(() => {
-  pname.value = route.params.pname
+// 题目 id
+const qid = parseInt(route.params.qid as string) || 0
+
+const content = ref('')
+const code = ref('')
+const lang = ref<LanguageName>('C')
+const results = ref<CodeExecuteResult[]>([])
+const loading = ref(false)
+
+// 不同执行状态对应的颜色
+const statusColorMap: { [status in CodeExecuteStatus]: string } = {
+  [CodeExecuteStatus.AC]: '#67c23a',
+  [CodeExecuteStatus.WA]: '#f56c6c',
+  [CodeExecuteStatus.TLE]: '#f56c6c',
+  [CodeExecuteStatus.MLE]: '#f56c6c',
+  [CodeExecuteStatus.RE]: '#f56c6c',
+  [CodeExecuteStatus.CE]: '#f56c6c',
+}
+
+onMounted(async () => {
+  if (!qid) {
+    message.error('题目 id 不存在')
+    return
+  }
+  const res = await ProblemApi.getProblem(qid)
+  if (res.code !== 0) {
+    message.error(res.msg)
+    return
+  }
+  content.value = generateMd(res.data)
 })
 
-const value = `
-# 1.两数之和
+const submitCode = async () => {
+  loading.value = true
+  const res = await ProblemApi.submitCode(
+    qid,
+    code.value,
+    LANGUAGE_TYPE_MAP[lang.value],
+  )
 
-给定一个整数数组 nums 和一个整数目标值 target，请你在该数组中找出 和为目标值 target  的那 两个 整数，并返回它们的数组下标。
+  if (res.code !== 0) {
+    message.error(res.msg)
+    return
+  }
 
-你可以假设每种输入只会对应一个答案。但是，数组中同一个元素在答案里不能重复出现。
-
-你可以按任意顺序返回答案。
-
-示例 1：
-
-> - 输入：nums = [2,7,11,15], target = 9
-> - 输出：[0,1]
-> - 解释：因为 nums[0] + nums[1] == 9 ，返回 [0, 1] 。
-
-示例 2：
-
-> - 输入：nums = [3,2,4], target = 6
-> - 输出：[1,2]
-
-示例 3：
-
-> - 输入：nums = [3,3], target = 6
-> - 输出：[0,1]
-
-提示：
-
-- 2 <= nums.length <= 104
-- -109 <= nums[i] <= 109
-- -109 <= target <= 109
-- 只会存在一个有效答案
-`
-
-const code = ref(`#include<stdio.h>
-
-int main()
-{
-    return 0;
+  results.value = res.data
+  loading.value = false
 }
-`)
 </script>
 
 <style scoped lang="less">
@@ -90,6 +124,44 @@ int main()
 
     &:hover {
       background-color: #d5d5d5;
+    }
+  }
+
+  .result {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin-top: 20px;
+
+    .result-item {
+      flex: 0 0 100px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100px;
+      text-align: center;
+      border: 1px solid #e0e0e0;
+      border-radius: 5px;
+    }
+  }
+}
+
+:deep(.markdown-body) {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    border: none;
+  }
+
+  .sample {
+    display: flex;
+    gap: 20px;
+
+    & > div {
+      flex: 1;
     }
   }
 }

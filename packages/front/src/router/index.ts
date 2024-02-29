@@ -34,7 +34,7 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import('@/views/about/AboutPage.vue'),
   },
   {
-    path: '/problem/solve/:pname',
+    path: '/problem/solve/:qid',
     name: 'ProblemSolve',
     component: () => import('@/views/problem/solve/ProblemSolvePage.vue'),
   },
@@ -42,6 +42,11 @@ const routes: Array<RouteRecordRaw> = [
     path: '/problem/create/',
     name: 'ProblemCreate',
     component: () => import('@/views/problem/create/ProblemCreatePage.vue'),
+  },
+  {
+    path: '/person/setting',
+    name: 'PersonSetting',
+    component: () => import('@/views/person/setting/PersonSettingPage.vue'),
   },
   {
     path: '/:pathMatch(.*)*',

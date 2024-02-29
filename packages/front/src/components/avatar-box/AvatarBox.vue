@@ -6,17 +6,17 @@
     :show-arrow="false"
   >
     <template #reference>
-      <div class="avatar"><el-avatar :src="avatar" /></div>
+      <div class="avatar"><el-avatar :src="userStore.avatar || avatar" /></div>
     </template>
     <template #default>
       <div class="menu">
-        <div>
+        <div @click="router.push('/person/setting')">
           <el-icon><Setting /></el-icon>个人设置
         </div>
         <div>
           <el-icon><House /></el-icon>我的班级
         </div>
-        <div>
+        <div @click="logout">
           <el-icon><CircleClose /></el-icon>退出账号
         </div>
       </div>
@@ -25,8 +25,19 @@
 </template>
 
 <script setup lang="ts">
-import avatar from '@/assets/images/avatar.png'
+import avatar from '@/assets/images/avatar2.png'
+import { useUserStore } from '@/utils/store'
 import { CircleClose, House, Setting } from '@element-plus/icons-vue'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
+const userStore = useUserStore()
+
+// 退出登录
+const logout = () => {
+  localStorage.removeItem('token')
+  window.location.href = '/login'
+}
 </script>
 
 <style scoped lang="less">

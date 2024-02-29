@@ -25,6 +25,11 @@
     "email": "2911331070@qq.com"
   },
   "license": "MIT",
+  "dependencies": {
+    "@simple-oj-frontend/api": "workspace:^",
+    "@simple-oj-frontend/shared": "workspace:^",
+    "pinia": "^2.1.7"
+  },
   "devDependencies": {
     "@types/node": "^20.11.16",
     "@typescript-eslint/eslint-plugin": "^6.20.0",
@@ -51,9 +56,5 @@
   },
   "lint-staged": {
     "*.{vue,js,ts,jsx,tsx,json}": "eslint --fix"
-  },
-  "dependencies": {
-    "@simple-oj-frontend/api": "workspace:^",
-    "@simple-oj-frontend/shared": "workspace:^"
   }
 }

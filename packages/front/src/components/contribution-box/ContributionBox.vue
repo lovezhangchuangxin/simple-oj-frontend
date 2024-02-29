@@ -45,6 +45,8 @@
 </template>
 
 <script setup lang="ts">
+import { onMounted, ref, toRefs } from 'vue'
+
 interface ContributionProps {
   from: string
   to: string
@@ -53,15 +55,15 @@ interface ContributionProps {
 }
 
 // 不能在解构的时候使用默认值！而是要在 withDefaults 中使用
-const { from, to, data, size } = withDefaults(
-  defineProps<ContributionProps>(),
-  {
-    size: 12,
-  },
-)
+const props = withDefaults(defineProps<ContributionProps>(), {
+  size: 12,
+})
 
-const fromDate = new Date(from)
-const toDate = new Date(to)
+const { from, to, data, size } = toRefs(props)
+
+const now = new Date()
+const fromDate = new Date(from.value)
+const toDate = new Date(to.value)
 const milisecondsPerDay = 1000 * 60 * 60 * 24
 
 const weeks =
@@ -81,7 +83,7 @@ const getDate = (week: number, day: number) => {
 // 获取日期字符串
 const getDateString = (week: number, day: number) => {
   const date = getDate(week, day)
-  return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`
+  return date.toISOString().split('T')[0]
 }
 
 // 计算日期是否在 from 和 to 之间
@@ -96,10 +98,13 @@ const getBackgroundColor = (week: number, day: number) => {
     fromDate.getTime() +
       (week * 7 + day - fromDate.getDay()) * milisecondsPerDay,
   )
-  const key = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`
-  const count = data[key]
-  if (count === undefined) {
+  if (date > now) {
     return '#ffffff'
+  }
+  const key = date.toISOString().split('T')[0]
+  const count = data.value[key]
+  if (count === undefined) {
+    return ''
   } else if (count === 0) {
     return '#ebedf0'
   } else if (count <= 3) {
@@ -129,31 +134,35 @@ const monthPrefix = [
 ]
 const dayPrefix = ['', 'Mon', '', 'Wed', '', 'Fri', '']
 
-const monthCols: {
-  month: number
-  col: number
-}[] = []
+const monthCols = ref<
+  {
+    month: number
+    col: number
+  }[]
+>([])
 
-let lastMonth = getDate(0, 0).getMonth()
-let lastCols = 0
+onMounted(() => {
+  let lastMonth = getDate(0, 0).getMonth()
+  let lastCols = 0
 
-for (let week = 0; week < weeks; week++) {
-  const month = getDate(week, 0).getMonth()
-  if (month === lastMonth) {
-    lastCols++
-    continue
+  for (let week = 0; week < weeks; week++) {
+    const month = getDate(week, 0).getMonth()
+    if (month === lastMonth) {
+      lastCols++
+      continue
+    }
+    monthCols.value.push({
+      month: lastMonth,
+      col: lastCols,
+    })
+    lastMonth = month
+    lastCols = 1
   }
-  monthCols.push({
+
+  monthCols.value.push({
     month: lastMonth,
     col: lastCols,
   })
-  lastMonth = month
-  lastCols = 1
-}
-
-monthCols.push({
-  month: lastMonth,
-  col: lastCols,
 })
 </script>
 
@@ -168,7 +177,7 @@ monthCols.push({
   }
 
   td {
-    background-color: #ebedf0;
+    background-color: #f5f5f5;
     border-radius: 2px;
     cursor: pointer;
   }

@@ -87,6 +87,46 @@
         />
       </div>
 
+      <div>
+        <h4>内存限制</h4>
+        <el-space>
+          <el-select
+            v-model="content.memoryLimit"
+            class="m-2"
+            placeholder="Select"
+            size="large"
+            style="width: 240px"
+          >
+            <el-option
+              v-for="item in [32, 64, 128, 256, 512]"
+              :key="item"
+              :value="item"
+            />
+          </el-select>
+          <span>MB</span>
+        </el-space>
+      </div>
+
+      <div>
+        <h4>时间限制</h4>
+        <el-space>
+          <el-select
+            v-model="content.timeLimit"
+            class="m-2"
+            placeholder="Select"
+            size="large"
+            style="width: 240px"
+          >
+            <el-option
+              v-for="item in [500, 1000, 1500, 2000]"
+              :key="item"
+              :value="item"
+            />
+          </el-select>
+          <span>MS</span>
+        </el-space>
+      </div>
+
       <div class="submit">
         <el-button type="primary" @click.prevent="submit">提交</el-button>
       </div>
@@ -125,36 +165,28 @@ import 'highlight.js/styles/default.css'
 import math from '@bytemd/plugin-math'
 import 'katex/dist/katex.css'
 
-import { nextTick, reactive, ref, watch } from 'vue'
+import { nextTick, reactive, ref } from 'vue'
 import { Plus } from '@element-plus/icons-vue'
 import { message } from '@/utils/common/common'
 import MdViewer from '@/components/md-viewer/MdViewer.vue'
+import { ProblemContent, ProblemApi } from '@simple-oj-frontend/api'
+import { generateMd } from './generateMd'
+import { useUserStore } from '@/utils/store'
 
 const plugins = [gfm(), highlight(), math()]
-
-interface ProblemContent {
-  // 题目标题
-  title: string
-  // 题目描述
-  description: string
-  // 输入格式
-  inputFormat: string
-  // 输出格式
-  outputFormat: string
-  // 样例数据
-  sampleGroup: { in: string; out: string }[]
-  // 提示说明
-  hint: string
-}
+const userStore = useUserStore()
 
 // 题目内容
 const content = reactive<ProblemContent>({
+  authorId: userStore.id,
   title: '',
   description: '',
   inputFormat: '',
   outputFormat: '',
   sampleGroup: [{ in: '', out: '' }],
   hint: '',
+  memoryLimit: 128,
+  timeLimit: 1000,
 })
 
 const setContent = (
@@ -188,45 +220,11 @@ const removeSampleGroup = (index: number) => {
   content.sampleGroup.splice(index, 1)
 }
 
-watch(
-  () => content,
-  (value) => {
-    console.log(value)
-  },
-)
-
 const drawer = ref(false)
 const md = ref('')
 
-const getSampleHtml = (
-  sample: ProblemContent['sampleGroup'][0],
-  index: number,
-) => {
-  return `
-<div class="sample">
-    <div>
-        <h4>输入#${index}</h4>
-        <pre>${sample.in}</pre>
-    </div>
-    <div>
-        <h4>输出#${index}</h4>
-        <pre>${sample.out}</pre>
-    </div>
-</div>
-    `
-}
-
-const getSampleGroupHtml = (sampleGroup: ProblemContent['sampleGroup']) => {
-  const result = sampleGroup.reduce((pre, cur, index) => {
-    return pre + getSampleHtml(cur, index)
-  }, '')
-
-  return result
-}
-
 const submit = () => {
-  const { title, description, inputFormat, outputFormat, sampleGroup, hint } =
-    content
+  const { title, description, inputFormat, outputFormat } = content
 
   if (!title) {
     message.error('请输入题目名称')
@@ -249,28 +247,21 @@ const submit = () => {
   }
 
   drawer.value = true
-  md.value = `# ${title}
-
-## 题目描述
-${description}
-
-## 输入格式
-${inputFormat}
-
-## 输出格式
-${outputFormat}
-
-## 样例
-
-${getSampleGroupHtml(sampleGroup)}
-
-## 提示说明
-${hint}
-`
+  md.value = generateMd(content)
 }
 
-const confirmClick = () => {
+const confirmClick = async () => {
   drawer.value = false
+
+  const res = await ProblemApi.createProblem(content)
+  if (res.code === 0) {
+    message({
+      type: 'success',
+      message: '题目创建成功',
+    })
+  } else {
+    message.error('题目创建失败')
+  }
 }
 </script>
 
