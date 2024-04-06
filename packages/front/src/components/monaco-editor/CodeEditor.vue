@@ -26,7 +26,14 @@
     </div>
     <MonacoEditor
       v-model="code"
-      v-bind="{ theme, lang, fontFamily, fontSize, resetCode }"
+      v-bind="{
+        theme,
+        lang,
+        fontFamily,
+        fontSize,
+        resetCode,
+        codeStoragePreKey,
+      }"
     />
   </div>
 </template>
@@ -45,6 +52,7 @@ const { theme, fontFamily, fontSize } = toRefs(props)
 const code = ref(props.modelValue)
 const lang = ref(props.lang)
 const resetCode = ref(0)
+const { codeStoragePreKey } = props
 const emit = defineEmits(['update:modelValue', 'update:lang'])
 
 watchEffect(() => {

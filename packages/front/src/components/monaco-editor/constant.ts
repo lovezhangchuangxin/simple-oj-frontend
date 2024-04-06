@@ -63,3 +63,24 @@ export const LANGUAGE_CODE_TEMPLATE_MAP: { [lang in LanguageName]: string } = {
   'C++': CPP_CODE_TEMPLATE,
   Java: JAVA_CODE_TEMPLATE,
 }
+
+/**
+ * 加载本地代码
+ */
+export function loadLocalCode(codeStoragePreKey: string, lang: LanguageName) {
+  const key = `${codeStoragePreKey}_${lang}`
+  return localStorage.getItem(key)
+}
+
+/**
+ * 保存本地代码
+ */
+export function saveLocalCode(
+  codeStoragePreKey: string,
+  lang: LanguageName,
+  code: string,
+) {
+  if (!code) return
+  const key = `${codeStoragePreKey}_${lang}`
+  localStorage.setItem(key, code)
+}

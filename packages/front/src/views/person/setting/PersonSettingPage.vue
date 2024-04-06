@@ -15,14 +15,14 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia'
 import type { UploadRequestHandler } from 'element-plus'
+
 import { Plus } from '@element-plus/icons-vue'
 import { useUserStore } from '@/utils/store'
 import { message } from '@/utils/common/common'
 import { UserApi } from '@simple-oj-frontend/api'
 
 const userStore = useUserStore()
-const { id, username, avatar, email, createTime, updateTime } =
-  storeToRefs(userStore)
+const { avatar } = storeToRefs(userStore)
 
 const uploadAvatar: UploadRequestHandler = async (option) => {
   const file = option.file

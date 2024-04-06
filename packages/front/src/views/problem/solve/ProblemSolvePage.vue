@@ -11,7 +11,11 @@
       <pane size="55">
         <splitpanes horizontal>
           <pane size="100">
-            <CodeEditor v-model="code" v-model:lang="lang" />
+            <CodeEditor
+              v-model="code"
+              v-model:lang="lang"
+              :codeStoragePreKey="`code_${qid}`"
+            />
           </pane>
           <pane size="30">
             <el-button type="primary" @click="submitCode" :loading="loading"
@@ -57,6 +61,7 @@ import {
   ProblemApi,
 } from '@simple-oj-frontend/api'
 import { message } from '@/utils/common/common'
+import { statusColorMap } from './util'
 // import MonacoEditor from '@/components/monaco-editor/MonacoEditor.vue'
 
 const route = useRoute()
@@ -65,26 +70,17 @@ const route = useRoute()
 const qid = parseInt(route.params.qid as string) || 0
 
 const content = ref('')
-const code = ref('')
 const lang = ref<LanguageName>('C')
+const code = ref('')
 const results = ref<CodeExecuteResult[]>([])
 const loading = ref(false)
-
-// 不同执行状态对应的颜色
-const statusColorMap: { [status in CodeExecuteStatus]: string } = {
-  [CodeExecuteStatus.AC]: '#67c23a',
-  [CodeExecuteStatus.WA]: '#f56c6c',
-  [CodeExecuteStatus.TLE]: '#f56c6c',
-  [CodeExecuteStatus.MLE]: '#f56c6c',
-  [CodeExecuteStatus.RE]: '#f56c6c',
-  [CodeExecuteStatus.CE]: '#f56c6c',
-}
 
 onMounted(async () => {
   if (!qid) {
     message.error('题目 id 不存在')
     return
   }
+
   const res = await ProblemApi.getProblem(qid)
   if (res.code !== 0) {
     message.error(res.msg)

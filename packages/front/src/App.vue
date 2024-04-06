@@ -20,7 +20,7 @@
       <AvatarBox />
     </el-header>
     <el-main style="overflow: hidden"><router-view></router-view></el-main>
-    <el-footer v-show="isFooterShow">HUST-OJ ©2023 by chuangxin</el-footer>
+    <el-footer v-show="isFooterShow">Simple-OJ ©2023 by chuangxin</el-footer>
   </el-container>
   <el-backtop :right="64" :bottom="100" />
 </template>

@@ -18,28 +18,46 @@ import {
   LANGUAGE_CODE_TEMPLATE_MAP,
   LANGUAGE_TYPE_MAP,
   LanguageName,
+  loadLocalCode,
+  saveLocalCode,
 } from './constant'
 
 export interface EditorProps {
+  // 代码
   modelValue: string
+  // 主题
   theme?: string
   lang: LanguageName
   fontFamily?: string
   fontSize?: number
+  // 用于重置代码模板
   resetCode?: number
+  // 代码保存的 key 的前缀，完整的 key 还需要拼上语言
+  codeStoragePreKey?: string
 }
 
 const container = ref<HTMLElement | null>(null)
 
 const props = defineProps<EditorProps>()
-const { modelValue, theme, lang, fontFamily, fontSize, resetCode } =
-  toRefs(props)
-const emit = defineEmits(['update:modelValue'])
+const {
+  modelValue: code,
+  theme,
+  lang,
+  fontFamily,
+  fontSize,
+  resetCode,
+} = toRefs(props)
+const { codeStoragePreKey } = props
 const codeTemplate = { ...LANGUAGE_CODE_TEMPLATE_MAP }
+const emit = defineEmits<{
+  'update:modelValue': [value: string]
+}>()
+
+let timer: ReturnType<typeof setInterval> | null = null
 
 onMounted(() => {
   const codeEditor = editor.create(container.value as HTMLElement, {
-    value: modelValue.value || '// code here...',
+    value: code.value || '// code here...',
     language: LANGUAGE_TYPE_MAP[lang.value],
     theme: theme.value || '',
     fontFamily: fontFamily.value || 'ui-monospace',
@@ -72,30 +90,50 @@ onMounted(() => {
   // 修改语言
   watch(lang, (newLang, oldLang) => {
     // 先保存当前语言的代码
-    codeTemplate[oldLang] = codeEditor.getValue()
+    const oldCode = (codeTemplate[oldLang] = codeEditor.getValue())
+    if (codeStoragePreKey) {
+      saveLocalCode(codeStoragePreKey, oldLang, oldCode)
+    }
     // 切换语言
     editor.setModelLanguage(
       codeEditor.getModel() as editor.ITextModel,
       LANGUAGE_TYPE_MAP[newLang] || 'cpp',
     )
     // 更新模板
-    codeEditor.setValue(codeTemplate[newLang])
+    let newCode = ''
+    if (codeStoragePreKey) {
+      newCode =
+        loadLocalCode(codeStoragePreKey, newLang) || codeTemplate[newLang]
+    }
+    codeEditor.setValue(newCode)
   })
 
+  if (!code.value && codeStoragePreKey) {
+    codeEditor.setValue(
+      loadLocalCode(codeStoragePreKey, lang.value) || code.value,
+    )
+  }
+
   // resetCode 变换了就还原到默认的代码模板
-  watch(
-    resetCode,
-    () => {
-      codeEditor.setValue(codeTemplate[lang.value])
-    },
-    { immediate: true },
-  )
+  watch(resetCode, () => {
+    codeEditor.setValue(LANGUAGE_CODE_TEMPLATE_MAP[lang.value])
+  })
+
+  if (codeStoragePreKey) {
+    timer = setInterval(() => {
+      saveLocalCode(codeStoragePreKey, lang.value, codeEditor.getValue())
+    }, 1000)
+  }
 })
 
 onBeforeUnmount(() => {
   editor.getModels().forEach((model) => {
     model.dispose()
   })
+
+  if (timer) {
+    clearInterval(timer)
+  }
 })
 </script>
 
