@@ -2,12 +2,14 @@
   <div>
     <el-container>
       <el-main>
-        <div>每日一题：。。。。。。</div>
+        <h2 class="title">经典热题</h2>
         <ProblemList :data="tableData" />
       </el-main>
       <el-aside width="250px">
         <el-affix :offset="120" style="width: 250px">
-          <ContributionBox :from="from" :to="to" :data="contributionData" />
+          <div class="contribution">
+            <ContributionBox :from="from" :to="to" :data="contributionData" />
+          </div>
           <div>我是公告</div>
         </el-affix>
       </el-aside>
@@ -68,4 +70,25 @@ onMounted(async () => {
 })
 </script>
 
-<style scoped></style>
+<style scoped lang="less">
+main {
+  padding-right: 60px;
+}
+
+.title {
+  margin-bottom: 10px;
+  font-size: 20px;
+  font-weight: 500;
+  color: #303133;
+}
+
+.contribution {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+  background-color: #fff;
+  padding: 20px 10px;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px 0 rgba(0, 0, 0, 0.1);
+}
+</style>

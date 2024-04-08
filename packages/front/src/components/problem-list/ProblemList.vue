@@ -97,8 +97,8 @@ const TableHeadNameMap = {
 const TableHeadWidthMap = {
   status: 80,
   id: 100,
-  title: 250,
-  tag: 250,
+  title: undefined,
+  tag: undefined,
   difficulty: 100,
   passRate: 150,
 }
