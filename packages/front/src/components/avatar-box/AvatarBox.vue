@@ -16,6 +16,12 @@
         <div>
           <el-icon><House /></el-icon>我的班级
         </div>
+        <div @click="goProblemManage">
+          <el-icon><Apple /></el-icon>题目管理
+        </div>
+        <div @click="goBulletinSetting">
+          <el-icon><ChatSquare /></el-icon>公告设置
+        </div>
         <div @click="logout">
           <el-icon><CircleClose /></el-icon>退出账号
         </div>
@@ -27,11 +33,26 @@
 <script setup lang="ts">
 import avatar from '@/assets/images/avatar2.png'
 import { useUserStore } from '@/utils/store'
-import { CircleClose, House, Setting } from '@element-plus/icons-vue'
+import {
+  Apple,
+  ChatSquare,
+  CircleClose,
+  House,
+  Setting,
+} from '@element-plus/icons-vue'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
 const userStore = useUserStore()
+
+const goProblemManage = () => {
+  router.push('/problem/manage')
+}
+
+// 设置公告
+const goBulletinSetting = () => {
+  router.push('/bulletin/setting')
+}
 
 // 退出登录
 const logout = () => {

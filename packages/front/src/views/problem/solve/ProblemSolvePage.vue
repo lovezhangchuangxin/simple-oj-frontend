@@ -61,7 +61,7 @@ import {
   ProblemApi,
 } from '@simple-oj-frontend/api'
 import { message } from '@/utils/common/common'
-import { statusColorMap } from './util'
+import { statusColorMap } from '../util'
 // import MonacoEditor from '@/components/monaco-editor/MonacoEditor.vue'
 
 const route = useRoute()
@@ -81,7 +81,7 @@ onMounted(async () => {
     return
   }
 
-  const res = await ProblemApi.getProblem(qid)
+  const res = await ProblemApi.getProblemById(qid)
   if (res.code !== 0) {
     message.error(res.msg)
     return

@@ -8,6 +8,8 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     AvatarBox: typeof import('./src/components/avatar-box/AvatarBox.vue')['default']
+    Bulletin: typeof import('./src/components/bulletin/bulletin.vue')['default']
+    BulletinBoard: typeof import('./src/components/bulletin/BulletinBoard.vue')['default']
     CodeEditor: typeof import('./src/components/monaco-editor/CodeEditor.vue')['default']
     ContributionBox: typeof import('./src/components/contribution-box/ContributionBox.vue')['default']
     ElAffix: typeof import('element-plus/es')['ElAffix']
@@ -15,6 +17,8 @@ declare module 'vue' {
     ElAvatar: typeof import('element-plus/es')['ElAvatar']
     ElBacktop: typeof import('element-plus/es')['ElBacktop']
     ElButton: typeof import('element-plus/es')['ElButton']
+    ElCollapse: typeof import('element-plus/es')['ElCollapse']
+    ElCollapseItem: typeof import('element-plus/es')['ElCollapseItem']
     ElContainer: typeof import('element-plus/es')['ElContainer']
     ElDrawer: typeof import('element-plus/es')['ElDrawer']
     ElDropdown: typeof import('element-plus/es')['ElDropdown']
@@ -31,6 +35,8 @@ declare module 'vue' {
     ElMenu: typeof import('element-plus/es')['ElMenu']
     ElMenuItem: typeof import('element-plus/es')['ElMenuItem']
     ElOption: typeof import('element-plus/es')['ElOption']
+    ElPagination: typeof import('element-plus/es')['ElPagination']
+    ElPopconfirm: typeof import('element-plus/es')['ElPopconfirm']
     ElPopover: typeof import('element-plus/es')['ElPopover']
     ElProgress: typeof import('element-plus/es')['ElProgress']
     ElRow: typeof import('element-plus/es')['ElRow']

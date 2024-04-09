@@ -34,19 +34,54 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import('@/views/about/AboutPage.vue'),
   },
   {
-    path: '/problem/solve/:qid',
-    name: 'ProblemSolve',
-    component: () => import('@/views/problem/solve/ProblemSolvePage.vue'),
-  },
-  {
-    path: '/problem/create/',
-    name: 'ProblemCreate',
-    component: () => import('@/views/problem/create/ProblemCreatePage.vue'),
+    path: '/problem',
+    children: [
+      {
+        path: 'manage',
+        name: 'ProblemManage',
+        component: () => import('@/views/problem/manage/ProblemManagePage.vue'),
+      },
+      {
+        path: 'solve/:qid',
+        name: 'ProblemSolve',
+        component: () => import('@/views/problem/solve/ProblemSolvePage.vue'),
+      },
+      {
+        path: 'create',
+        name: 'ProblemCreate',
+        component: () => import('@/views/problem/create/ProblemCreatePage.vue'),
+      },
+    ],
   },
   {
     path: '/person/setting',
     name: 'PersonSetting',
     component: () => import('@/views/person/setting/PersonSettingPage.vue'),
+  },
+  {
+    path: '/bulletin',
+    children: [
+      {
+        path: '',
+        name: 'Bulletin',
+        component: () => import('@/views/bulletin/BulletinPage.vue'),
+      },
+      {
+        path: 'item/:id',
+        name: 'BulletinItem',
+        component: () => import('@/views/bulletin/BulletinItemPage.vue'),
+      },
+      {
+        path: 'setting',
+        name: 'BulletinSetting',
+        component: () => import('@/views/bulletin/BulletinSettingPage.vue'),
+      },
+      {
+        path: 'create',
+        name: 'BulletinCreate',
+        component: () => import('@/views/bulletin/BulletinCreatePage.vue'),
+      },
+    ],
   },
   {
     path: '/:pathMatch(.*)*',

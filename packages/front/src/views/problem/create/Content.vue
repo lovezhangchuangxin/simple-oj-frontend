@@ -165,13 +165,18 @@ import 'highlight.js/styles/default.css'
 import math from '@bytemd/plugin-math'
 import 'katex/dist/katex.css'
 
-import { nextTick, reactive, ref } from 'vue'
+import { nextTick, onMounted, reactive, ref } from 'vue'
 import { Plus } from '@element-plus/icons-vue'
 import { message } from '@/utils/common/common'
 import MdViewer from '@/components/md-viewer/MdViewer.vue'
-import { ProblemContent, ProblemApi } from '@simple-oj-frontend/api'
+import {
+  ProblemContent,
+  ProblemApi,
+  ResponseData,
+} from '@simple-oj-frontend/api'
 import { generateMd } from './generateMd'
 import { useUserStore } from '@/utils/store'
+import { useRoute } from 'vue-router'
 
 const plugins = [gfm(), highlight(), math()]
 const userStore = useUserStore()
@@ -223,6 +228,25 @@ const removeSampleGroup = (index: number) => {
 const drawer = ref(false)
 const md = ref('')
 
+const route = useRoute()
+const id = Number(route.query.id)
+const isEdit = id > 0
+
+onMounted(async () => {
+  if (isEdit) {
+    const res = await ProblemApi.getProblemById(id)
+    if (res.code === 0) {
+      for (let key in res.data) {
+        if (key in content) {
+          const k = key as keyof ProblemContent
+          // @ts-ignore
+          content[k] = res.data[k]
+        }
+      }
+    }
+  }
+})
+
 const submit = () => {
   const { title, description, inputFormat, outputFormat } = content
 
@@ -253,14 +277,17 @@ const submit = () => {
 const confirmClick = async () => {
   drawer.value = false
 
-  const res = await ProblemApi.createProblem(content)
+  let res: ResponseData<unknown>
+  res = isEdit
+    ? await ProblemApi.updateProblem({ ...content, id })
+    : await ProblemApi.createProblem(content)
   if (res.code === 0) {
     message({
       type: 'success',
-      message: '题目创建成功',
+      message: res.msg,
     })
   } else {
-    message.error('题目创建失败')
+    message.error(res.msg)
   }
 }
 </script>

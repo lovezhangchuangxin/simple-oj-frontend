@@ -39,7 +39,23 @@
             </template>
             <template v-else>暂无</template>
           </div>
-          <div v-else>{{ row[key] }}</div>
+          <div v-else-if="key === 'operation' && isAdmin">
+            <el-button
+              size="small"
+              type="primary"
+              @click="goToEditProblem(row.id)"
+              >编辑</el-button
+            >
+            <el-popconfirm
+              title="确定删除该题目吗？"
+              @confirm="deleteProblem(row.id)"
+            >
+              <template #reference>
+                <el-button size="small" type="danger">删除</el-button>
+              </template>
+            </el-popconfirm>
+          </div>
+          <div v-else-if="key === 'difficulty'">{{ row[key] }}</div>
         </template>
       </el-table-column>
     </el-table>
@@ -47,7 +63,11 @@
 </template>
 
 <script setup lang="ts">
+import { message } from '@/utils/common/common'
+import { useUserStore } from '@/utils/store'
 import { Select, SemiSelect } from '@element-plus/icons-vue'
+import { ProblemApi } from '@simple-oj-frontend/api'
+import { useRoute, useRouter } from 'vue-router'
 
 export interface ProblemShowItem {
   /**
@@ -85,6 +105,10 @@ interface PronblemListProps {
 
 defineProps<PronblemListProps>()
 
+const userStore = useUserStore()
+const router = useRouter()
+const route = useRoute()
+
 const TableHeadNameMap = {
   status: '状态',
   id: '题号',
@@ -92,6 +116,7 @@ const TableHeadNameMap = {
   tag: '标签',
   difficulty: '难度',
   passRate: '通过率',
+  operation: '操作',
 }
 
 const TableHeadWidthMap = {
@@ -101,6 +126,39 @@ const TableHeadWidthMap = {
   tag: undefined,
   difficulty: 100,
   passRate: 150,
+  operation: 160,
+}
+
+// 是否是管理员，先写死
+const isAdmin =
+  userStore.username === '和谐创新' && route.path === '/problem/manage'
+
+if (!isAdmin) {
+  // @ts-ignore
+  delete TableHeadNameMap.operation
+}
+
+// 编辑题目
+const goToEditProblem = (id: number) => {
+  router.push(`/problem/create?id=${id}`)
+}
+
+// 删除题目
+const deleteProblem = (id: number) => {
+  ProblemApi.deleteProblem(id).then((res) => {
+    if (res.code === 0) {
+      message({
+        message: res.msg,
+      })
+
+      return
+    }
+
+    message({
+      type: 'error',
+      message: res.msg,
+    })
+  })
 }
 </script>
 

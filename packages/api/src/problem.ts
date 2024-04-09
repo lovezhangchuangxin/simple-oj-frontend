@@ -10,8 +10,6 @@ export interface Problem extends ProblemContent {
   id: number
   // 题目标签
   tag: string
-  // 题目描述
-  description: string
   // 提交数
   submitCount: number
   // 通过数
@@ -124,8 +122,26 @@ export class ProblemApi {
   /**
    * 获取题目
    */
-  public static getProblem(id: number) {
+  public static getProblemById(id: number) {
     return req<Problem>('GET', `/problem/${id}`)
+  }
+
+  /**
+   * 删除题目
+   */
+  public static deleteProblem(id: number) {
+    return req<undefined>('GET', `/problem/delete/${id}`)
+  }
+
+  /**
+   * 更新题目
+   */
+  public static updateProblem(
+    content: Partial<ProblemContent & { tag: string; description: string }> & {
+      id: number
+    },
+  ) {
+    return req<undefined>('POST', `/problem/update`, content)
   }
 
   /**

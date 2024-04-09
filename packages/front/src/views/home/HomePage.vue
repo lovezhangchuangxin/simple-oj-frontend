@@ -6,11 +6,13 @@
         <ProblemList :data="tableData" />
       </el-main>
       <el-aside width="250px">
-        <el-affix :offset="120" style="width: 250px">
+        <el-affix :offset="110" style="width: 250px">
           <div class="contribution">
             <ContributionBox :from="from" :to="to" :data="contributionData" />
           </div>
-          <div>我是公告</div>
+          <div>
+            <BulletinBoard />
+          </div>
         </el-affix>
       </el-aside>
     </el-container>
@@ -18,13 +20,15 @@
 </template>
 
 <script setup lang="ts">
+import { onMounted, ref } from 'vue'
 import ProblemList, {
   ProblemShowItem,
 } from '@/components/problem-list/ProblemList.vue'
 import ContributionBox from '@/components/contribution-box/ContributionBox.vue'
-import { onMounted, ref } from 'vue'
 import { ProblemApi } from '@simple-oj-frontend/api'
 import { message } from '@/utils/common/common'
+import BulletinBoard from '@/views/bulletin/BulletinBoard.vue'
+import { getProblemTableData } from '../problem/util'
 
 // 题单数据
 const tableData = ref<ProblemShowItem[]>([])
@@ -34,26 +38,7 @@ onMounted(async () => {
   if (res.code !== 0) {
     message.error(res.msg)
   }
-  const { problems, ids } = res.data
-  const idsSet = new Set(ids)
-  tableData.value = problems.map((problem) => {
-    let { id, title, tag, submitCount, acceptCount } = problem
-    if (!submitCount) submitCount = 2
-    if (!acceptCount) acceptCount = 1
-
-    const passRate = acceptCount / submitCount
-    const difficulty =
-      passRate > 0.5 ? '简单' : passRate > 0.3 ? '中等' : '困难'
-
-    return {
-      status: idsSet.has(problem.id) ? 2 : 0,
-      id,
-      title,
-      tag,
-      difficulty,
-      passRate,
-    } as ProblemShowItem
-  })
+  tableData.value = getProblemTableData(res.data)
 })
 
 const contributionData = ref<{ [day: string]: number }>({})
