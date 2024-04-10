@@ -11,11 +11,11 @@
       <el-table-column prop="createTime" label="创建时间" width="150" />
       <el-table-column prop="updateTime" label="更新时间" width="150" />
       <el-table-column prop="author" label="作者" width="180" />
-      <el-table-column prop="operation" label="操作" width="150">
+      <el-table-column prop="operation" label="操作" width="150" v-admin>
         <template #default="{ row }">
-          <el-button type="primary" size="small" @click="editBulletin(row.id)"
-            >编辑</el-button
-          >
+          <el-button type="primary" size="small" @click="editBulletin(row.id)">
+            编辑
+          </el-button>
           <el-popconfirm
             title="Are you sure to delete this?"
             @confirm="deleteBulletin(row.id)"
@@ -38,7 +38,8 @@
 </template>
 
 <script setup lang="ts">
-import { message } from '@/utils/common/common'
+import { formatTime, message } from '@/utils/common/common'
+import vAdmin from '@/utils/directives/admin'
 import { Bulletin, BulletinApi } from '@simple-oj-frontend/api'
 import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
@@ -91,8 +92,8 @@ const changePage = async (currentPage: number, pageSize: number) => {
   if (res.code === 0) {
     total.value = res.data.total
     bulletinData.value = res.data.data.map((item) => {
-      item.createTime = new Date(item.createTime).toLocaleString()
-      item.updateTime = new Date(item.updateTime).toLocaleString()
+      item.createTime = formatTime(item.createTime)
+      item.updateTime = formatTime(item.updateTime)
       ;(item as BulletinItem).author = res.data.user[item.authorId]
       return item as BulletinItem
     })

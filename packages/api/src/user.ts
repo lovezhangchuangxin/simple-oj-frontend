@@ -13,6 +13,8 @@ export interface UserInfo {
   password: string
   email: string
   avatar: string
+  // 角色，0 普通用户，1 管理员
+  role: number
   createTime: string
   updateTime: string
 }

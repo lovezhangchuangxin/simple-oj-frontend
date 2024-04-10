@@ -6,7 +6,7 @@ import { defineStore } from 'pinia'
  */
 type PartialUserInfo = Pick<
   UserInfo,
-  'id' | 'username' | 'avatar' | 'email' | 'createTime' | 'updateTime'
+  'id' | 'username' | 'avatar' | 'email' | 'role' | 'createTime' | 'updateTime'
 >
 
 export const useUserStore = defineStore('user', {
@@ -16,6 +16,7 @@ export const useUserStore = defineStore('user', {
       username: '',
       avatar: '',
       email: '',
+      role: 0,
       createTime: '',
       updateTime: '',
     }) as PartialUserInfo,

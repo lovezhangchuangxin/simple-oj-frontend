@@ -6,20 +6,22 @@
     :show-arrow="false"
   >
     <template #reference>
-      <div class="avatar"><el-avatar :src="userStore.avatar || avatar" /></div>
+      <div class="avatar" @click="goToPersonSetting">
+        <el-avatar :src="userStore.avatar || avatar" />
+      </div>
     </template>
     <template #default>
       <div class="menu">
-        <div @click="router.push('/person/setting')">
+        <div @click="goToPersonSetting">
           <el-icon><Setting /></el-icon>个人设置
         </div>
-        <div>
+        <!-- <div>
           <el-icon><House /></el-icon>我的班级
-        </div>
-        <div @click="goProblemManage">
+        </div> -->
+        <div @click="goToProblemManage" v-if="isAdmin(userStore.role)">
           <el-icon><Apple /></el-icon>题目管理
         </div>
-        <div @click="goBulletinSetting">
+        <div @click="goToBulletinSetting" v-if="isAdmin(userStore.role)">
           <el-icon><ChatSquare /></el-icon>公告设置
         </div>
         <div @click="logout">
@@ -32,12 +34,12 @@
 
 <script setup lang="ts">
 import avatar from '@/assets/images/avatar2.png'
+import { isAdmin } from '@/utils/directives/admin'
 import { useUserStore } from '@/utils/store'
 import {
   Apple,
   ChatSquare,
   CircleClose,
-  House,
   Setting,
 } from '@element-plus/icons-vue'
 import { useRouter } from 'vue-router'
@@ -45,12 +47,18 @@ import { useRouter } from 'vue-router'
 const router = useRouter()
 const userStore = useUserStore()
 
-const goProblemManage = () => {
+// 个人设置
+const goToPersonSetting = () => {
+  router.push('/person/setting')
+}
+
+// 题目管理
+const goToProblemManage = () => {
   router.push('/problem/manage')
 }
 
 // 设置公告
-const goBulletinSetting = () => {
+const goToBulletinSetting = () => {
   router.push('/bulletin/setting')
 }
 

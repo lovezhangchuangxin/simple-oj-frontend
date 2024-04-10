@@ -26,3 +26,7 @@ message.error = function (msg: string) {
     type: 'error',
   })
 }
+
+export const formatTime = (time: string) => {
+  return new Date(time).toLocaleString()
+}

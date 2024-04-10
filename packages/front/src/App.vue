@@ -69,7 +69,7 @@ onMounted(() => {
 </script>
 
 <style scoped lang="less">
-@padding: 88px;
+@padding: 120px;
 
 section {
   min-height: 100vh;

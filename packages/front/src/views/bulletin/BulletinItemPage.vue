@@ -6,15 +6,15 @@
       </el-main>
       <el-aside width="250px">
         <div class="base-info">
-          <h2>作者：{{ author }}</h2>
+          <h2>发布人：{{ author }}</h2>
           <p>
             创建于：{{
-              bulletin?.createTime && timeTransfer(bulletin.createTime)
+              bulletin?.createTime && formatTime(bulletin.createTime)
             }}
           </p>
           <p>
             更新于：{{
-              bulletin?.updateTime && timeTransfer(bulletin.updateTime)
+              bulletin?.updateTime && formatTime(bulletin.updateTime)
             }}
           </p>
         </div>
@@ -28,15 +28,12 @@ import { Bulletin, BulletinApi } from '@simple-oj-frontend/api'
 import { onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import MdViewer from '@/components/md-viewer/MdViewer.vue'
+import { formatTime } from '@/utils/common/common'
 
 const route = useRoute()
 const id = Number(route.params.id)
 const bulletin = ref<Bulletin>()
 const author = ref('')
-
-const timeTransfer = (time: string) => {
-  return new Date(time).toLocaleString()
-}
 
 const viewerStyle: Partial<CSSStyleDeclaration> = {
   border: '1px solid #ebeef5',
@@ -71,12 +68,14 @@ main {
     margin-bottom: 10px;
     font-size: 18px;
     font-weight: 500;
-    color: #7f7ff6;
+    color: #b378fa;
     gap: 6px;
   }
 
   p {
-    margin-bottom: 10px;
+    margin-bottom: 6px;
+    font-size: 14px;
+    color: #606266;
 
     &:last-child {
       margin-bottom: 0;

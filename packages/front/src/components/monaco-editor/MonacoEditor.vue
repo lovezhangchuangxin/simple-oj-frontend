@@ -108,9 +108,10 @@ onMounted(() => {
     codeEditor.setValue(newCode)
   })
 
-  if (!code.value && codeStoragePreKey) {
+  if (!code.value) {
     codeEditor.setValue(
-      loadLocalCode(codeStoragePreKey, lang.value) || code.value,
+      loadLocalCode(codeStoragePreKey || '', lang.value) ||
+        codeTemplate[lang.value],
     )
   }
 

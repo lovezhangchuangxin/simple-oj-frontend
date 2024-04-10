@@ -65,11 +65,20 @@ export const LANGUAGE_CODE_TEMPLATE_MAP: { [lang in LanguageName]: string } = {
 }
 
 /**
+ * 代码本地存储的 key
+ */
+export const getCodeStorageKey = (
+  codeStoragePreKey: string,
+  lang: LanguageName,
+) => {
+  return `${codeStoragePreKey}_${lang}`
+}
+
+/**
  * 加载本地代码
  */
 export function loadLocalCode(codeStoragePreKey: string, lang: LanguageName) {
-  const key = `${codeStoragePreKey}_${lang}`
-  return localStorage.getItem(key)
+  return localStorage.getItem(getCodeStorageKey(codeStoragePreKey, lang))
 }
 
 /**
@@ -81,6 +90,5 @@ export function saveLocalCode(
   code: string,
 ) {
   if (!code) return
-  const key = `${codeStoragePreKey}_${lang}`
-  localStorage.setItem(key, code)
+  localStorage.setItem(getCodeStorageKey(codeStoragePreKey, lang), code)
 }
