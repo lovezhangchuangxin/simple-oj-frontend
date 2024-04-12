@@ -67,12 +67,12 @@ export interface ProblemSolveRecord {
  * 代码执行状态
  */
 export enum CodeExecuteStatus {
-  AC = 1,
-  WA = 2,
-  TLE = 3,
-  MLE = 4,
-  RE = 5,
-  CE = 6,
+  AC = 'AC',
+  WA = 'WA',
+  TLE = 'TLE',
+  MLE = 'MLE',
+  RE = 'RE',
+  CE = 'CE',
 }
 
 /**
@@ -85,6 +85,8 @@ export type ProblemBriefInfo = Pick<
 
 /**
  * 代码执行结果
+ *
+ * @deprecated 请使用 CodeResult
  */
 export interface CodeExecuteResult {
   // 1: AC, 2: WA, 3: TLE, 4: MLE, 5: RE, 6: CE
@@ -99,6 +101,38 @@ export interface CodeExecuteResult {
   timeout: boolean
   // 内存消耗
   memory: number
+}
+
+/**
+ * 代码执行结果（新）
+ */
+export interface CodeResult {
+  cpu_time: number
+  real_time: number
+  memory: number
+  signal: number
+  exit_code: number
+  error: string
+  result: number
+}
+
+/**
+ * 判断代码执行结果
+ */
+export function judgeCodeExecuteStatus(result: CodeResult): CodeExecuteStatus {
+  switch (result.result) {
+    case 1:
+    case 2:
+      return CodeExecuteStatus.TLE
+    case 3:
+      return CodeExecuteStatus.MLE
+    case 4:
+      return CodeExecuteStatus.RE
+    case 6:
+      return CodeExecuteStatus.WA
+    default:
+      return CodeExecuteStatus.AC
+  }
 }
 
 export class ProblemApi {
@@ -152,11 +186,15 @@ export class ProblemApi {
     code: string,
     language: Language,
   ) {
-    return req<CodeExecuteResult[]>('POST', `/problem/submit`, {
-      problemId,
-      code,
-      language,
-    })
+    return req<{ stat: CodeResult; output?: string }[]>(
+      'POST',
+      `/problem/submitCode`,
+      {
+        problemId,
+        code,
+        language,
+      },
+    )
   }
 
   /**

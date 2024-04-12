@@ -17,23 +17,85 @@
               :codeStoragePreKey="`code_${qid}`"
             />
           </pane>
-          <pane size="30">
-            <el-button type="primary" @click="submitCode" :loading="loading"
-              >提交</el-button
-            >
-            <div class="result">
-              <div
-                class="result-item"
-                v-for="(result, index) in results"
-                :key="index"
-                :style="{ backgroundColor: statusColorMap[result.status] }"
-              >
-                <div>
-                  <h4>
-                    {{ CodeExecuteStatus[result.status] }}
-                  </h4>
-                  <p>{{ result.time }}ms {{ result.memory }}MB</p>
+          <pane size="70">
+            <div class="result-show">
+              <div class="submit">
+                <el-button type="primary" @click="submitCode" :loading="loading"
+                  >提交</el-button
+                >
+              </div>
+              <el-dialog v-model="dialogVisible" title="评测结果" width="800">
+                <div class="result-list">
+                  <div
+                    class="result-item"
+                    v-for="(result, index) in results"
+                    :key="index"
+                    :style="{
+                      backgroundColor:
+                        statusColorMap[judgeCodeExecuteStatus(result.stat)],
+                    }"
+                  >
+                    <div>
+                      <h4>
+                        {{ judgeCodeExecuteStatus(result.stat) }}
+                      </h4>
+                      <p>
+                        {{ result.stat.real_time }}ms
+                        {{ (result.stat.memory / 1024 / 1024).toFixed(2) }}MB
+                      </p>
+                    </div>
+                  </div>
                 </div>
+              </el-dialog>
+
+              <el-tabs class="result-tabs">
+                <!-- 注意：result 解构出来后会失去响应式！ -->
+                <el-tab-pane
+                  v-for="(result, index) in results"
+                  :label="`样例 ${index + 1}`"
+                  :key="index"
+                >
+                  <template #label>
+                    <span :style="{ color: getTagColor(results[index]) }">
+                      样例 {{ index + 1 }}
+                    </span>
+                  </template>
+                  <div class="result-tab">
+                    <template v-if="problem?.sampleGroup[index].in">
+                      <p>输入</p>
+                      <div>
+                        <pre v-text="problem?.sampleGroup[index].in"></pre>
+                      </div>
+                    </template>
+                    <p>实际输出</p>
+                    <div>
+                      <pre
+                        v-text="
+                          result.stat.result
+                            ? result.output! || '无'
+                            : problem?.sampleGroup[index].out
+                        "
+                      ></pre>
+                    </div>
+                    <p>预期输出</p>
+                    <div>
+                      <pre v-text="problem?.sampleGroup[index].out"></pre>
+                    </div>
+                    <template v-if="result.stat.result">
+                      <p>结果差异</p>
+                      <div>
+                        <pre
+                          class="diff"
+                          :data-index="index"
+                          ref="diffRef"
+                        ></pre>
+                      </div>
+                    </template>
+                  </div>
+                </el-tab-pane>
+              </el-tabs>
+              <div class="complie-error" v-show="complieError">
+                {{ complieError }}
               </div>
             </div>
           </pane>
@@ -44,7 +106,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { nextTick, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { Splitpanes, Pane } from 'splitpanes'
 import 'splitpanes/dist/splitpanes.css'
@@ -56,24 +118,28 @@ import {
 } from '@/components/monaco-editor/constant'
 import { generateMd } from '../create/generateMd'
 import {
-  CodeExecuteResult,
-  CodeExecuteStatus,
+  CodeResult,
+  Problem,
   ProblemApi,
+  judgeCodeExecuteStatus,
 } from '@simple-oj-frontend/api'
 import { message } from '@/utils/common/common'
 import { statusColorMap } from '../util'
-// import MonacoEditor from '@/components/monaco-editor/MonacoEditor.vue'
+import { diffChars } from 'diff'
 
 const route = useRoute()
-
 // 题目 id
 const qid = parseInt(route.params.qid as string) || 0
 
+const problem = ref<Problem | null>(null)
 const content = ref('')
 const lang = ref<LanguageName>('C')
 const code = ref('')
-const results = ref<CodeExecuteResult[]>([])
+const results = ref<{ stat: CodeResult; output?: string }[]>([])
+const complieError = ref('')
 const loading = ref(false)
+const diffRef = ref<HTMLPreElement[]>([])
+const dialogVisible = ref(false)
 
 onMounted(async () => {
   if (!qid) {
@@ -86,6 +152,7 @@ onMounted(async () => {
     message.error(res.msg)
     return
   }
+  problem.value = res.data
   content.value = generateMd(res.data)
 })
 
@@ -97,13 +164,54 @@ const submitCode = async () => {
     LANGUAGE_TYPE_MAP[lang.value],
   )
 
+  loading.value = false
+
   if (res.code !== 0) {
     message.error(res.msg)
+    results.value = []
+    complieError.value = res.data as unknown as string
     return
   }
 
   results.value = res.data
-  loading.value = false
+  complieError.value = ''
+  dialogVisible.value = true
+
+  nextTick(() => {
+    diffRef.value.forEach((diffPre) => {
+      const index = parseInt(diffPre.dataset.index!)
+      diffPre.innerHTML = getDiffHtml(
+        results.value[index].output!,
+        problem.value!.sampleGroup[index].out!,
+      )
+    })
+  })
+}
+
+// 获取标签颜色
+const getTagColor = (result: { stat: CodeResult; output?: string }) => {
+  // WA 红色
+  if (result.stat.result || result.output) {
+    return '#ac0000'
+  }
+  // AC
+  return '#87d068'
+}
+
+// 获取实际结果和预期结果的差异的 html
+// 注意性能问题
+const getDiffHtml = (output: string, expected: string) => {
+  const diff = diffChars(output, expected)
+  const items = diff.map((item) => {
+    if (item.added) {
+      return `<ins>${item.value}</ins>`
+    }
+    if (item.removed) {
+      return `<del>${item.value}</del>`
+    }
+    return item.value
+  })
+  return items.join('')
 }
 </script>
 
@@ -112,6 +220,7 @@ const submitCode = async () => {
   height: calc(100vh - 108px);
 
   :deep(.splitpanes__pane) {
+    overflow: auto;
     background-color: #ffffff;
   }
 
@@ -123,21 +232,58 @@ const submitCode = async () => {
     }
   }
 
-  .result {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-    margin-top: 20px;
+  .result-show {
+    padding: 10px;
 
-    .result-item {
-      flex: 0 0 100px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100px;
+    .submit {
       text-align: center;
-      border: 1px solid #e0e0e0;
-      border-radius: 5px;
+    }
+
+    .result-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      margin-top: 20px;
+
+      .result-item {
+        flex: 0 0 100px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100px;
+        text-align: center;
+        border: 1px solid #e0e0e0;
+        border-radius: 5px;
+      }
+    }
+
+    .result-tabs {
+      .result-tab {
+        p {
+          margin: 10px 0;
+          font-size: 12px;
+          color: #474747;
+        }
+
+        div {
+          padding: 10px;
+          border-radius: 10px;
+          background-color: #f2f3f4;
+          overflow-x: auto;
+        }
+
+        pre {
+          font-size: 16px;
+          font-family:
+            ui-monospace,
+            SFMono-Regular,
+            SF Mono,
+            Menlo,
+            Consolas,
+            Liberation Mono,
+            monospace;
+        }
+      }
     }
   }
 }
@@ -159,6 +305,31 @@ const submitCode = async () => {
     & > div {
       flex: 1;
     }
+  }
+}
+</style>
+<style>
+span[color='r'] {
+  color: red;
+  background-color: #fadad7;
+}
+
+span[color='g'] {
+  color: green;
+  background-color: #eaf2c2;
+}
+
+pre.diff {
+  ins {
+    background: #eaf2c2;
+    color: #406619;
+    text-decoration: none;
+  }
+
+  del {
+    text-decoration: none;
+    color: #b30000;
+    background: #fadad7;
   }
 }
 </style>

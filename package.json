@@ -14,7 +14,8 @@
     "format": "prettier --write . --cache",
     "lint": "eslint --fix . --cache",
     "lint:staged": "lint-staged",
-    "dev:front": "pnpm --filter @simple-oj-frontend/front dev"
+    "dev:front": "pnpm --filter @simple-oj-frontend/front dev",
+    "build": "pnpm --filter @simple-oj-frontend/front build"
   },
   "keywords": [
     "online-judge",

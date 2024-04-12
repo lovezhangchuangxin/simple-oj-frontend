@@ -39,6 +39,7 @@
             </template>
             <template v-else>暂无</template>
           </div>
+          <div v-else-if="key === 'difficulty'">{{ row[key] }}</div>
           <div v-else-if="key === 'operation' && isAdmin">
             <el-button
               size="small"
@@ -55,7 +56,6 @@
               </template>
             </el-popconfirm>
           </div>
-          <div v-else-if="key === 'difficulty'">{{ row[key] }}</div>
         </template>
       </el-table-column>
     </el-table>
@@ -130,8 +130,7 @@ const TableHeadWidthMap = {
 }
 
 // 是否是管理员，先写死
-const isAdmin =
-  userStore.username === '和谐创新' && route.path === '/problem/manage'
+const isAdmin = route.path === '/problem/manage' && userStore.role === 1
 
 if (!isAdmin) {
   // @ts-ignore
