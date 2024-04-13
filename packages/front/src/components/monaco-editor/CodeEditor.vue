@@ -12,8 +12,9 @@
         <template #dropdown>
           <el-dropdown-menu>
             <el-dropdown-item command="C">C</el-dropdown-item>
-            <el-dropdown-item command="C++">C++</el-dropdown-item>
-            <el-dropdown-item command="Java">Java</el-dropdown-item>
+            <!-- TODO: 支持更多语言 -->
+            <!-- <el-dropdown-item command="C++">C++</el-dropdown-item> -->
+            <!-- <el-dropdown-item command="Java">Java</el-dropdown-item> -->
           </el-dropdown-menu>
         </template>
       </el-dropdown>
