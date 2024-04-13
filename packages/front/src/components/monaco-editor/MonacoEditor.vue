@@ -65,6 +65,9 @@ onMounted(() => {
     automaticLayout: true,
     tabCompletion: 'on',
     tabSize: 4,
+    scrollbar: {
+      verticalScrollbarSize: 10,
+    },
   })
 
   // ctrl+s 保存时自动格式化全部代码

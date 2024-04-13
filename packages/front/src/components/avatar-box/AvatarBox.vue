@@ -65,7 +65,7 @@ const goToBulletinSetting = () => {
 // 退出登录
 const logout = () => {
   localStorage.removeItem('token')
-  window.location.href = '/login'
+  router.push('/login')
 }
 </script>
 

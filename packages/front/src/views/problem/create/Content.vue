@@ -282,10 +282,7 @@ const confirmClick = async () => {
     ? await ProblemApi.updateProblem({ ...content, id })
     : await ProblemApi.createProblem(content)
   if (res.code === 0) {
-    message({
-      type: 'success',
-      message: res.msg,
-    })
+    message.success(res.msg)
   } else {
     message.error(res.msg)
   }

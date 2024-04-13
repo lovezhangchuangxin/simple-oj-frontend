@@ -10,7 +10,7 @@
       </pane>
       <pane size="55">
         <splitpanes horizontal>
-          <pane size="100">
+          <pane size="100" style="overflow: hidden">
             <CodeEditor
               v-model="code"
               v-model:lang="lang"
@@ -95,7 +95,8 @@
                 </el-tab-pane>
               </el-tabs>
               <div class="complie-error" v-show="complieError">
-                {{ complieError }}
+                <p>编译错误：</p>
+                <pre v-text="complieError"></pre>
               </div>
             </div>
           </pane>
@@ -169,7 +170,10 @@ const submitCode = async () => {
   if (res.code !== 0) {
     message.error(res.msg)
     results.value = []
-    complieError.value = res.data as unknown as string
+    let error = res.data as unknown as string
+    // 将错误信息中的多余的路径信息去掉
+    error = error.replace(/\/root\/simple-oj\/code\/\d+\//g, '')
+    complieError.value = error
     return
   }
 
@@ -236,7 +240,14 @@ const getDiffHtml = (output: string, expected: string) => {
     padding: 10px;
 
     .submit {
+      position: relative;
       text-align: center;
+
+      button {
+        position: absolute;
+        right: 10px;
+        z-index: 10;
+      }
     }
 
     .result-list {
@@ -271,19 +282,34 @@ const getDiffHtml = (output: string, expected: string) => {
           background-color: #f2f3f4;
           overflow-x: auto;
         }
-
-        pre {
-          font-size: 16px;
-          font-family:
-            ui-monospace,
-            SFMono-Regular,
-            SF Mono,
-            Menlo,
-            Consolas,
-            Liberation Mono,
-            monospace;
-        }
       }
+    }
+
+    .complie-error {
+      p {
+        margin-bottom: 10px;
+        font-size: 14px;
+        color: #ff0000;
+      }
+
+      pre {
+        padding: 10px;
+        border-radius: 10px;
+        background-color: rgb(252, 252, 252);
+        white-space: pre-wrap;
+      }
+    }
+
+    pre {
+      font-size: 16px;
+      font-family:
+        ui-monospace,
+        SFMono-Regular,
+        SF Mono,
+        Menlo,
+        Consolas,
+        Liberation Mono,
+        monospace;
     }
   }
 }

@@ -5,6 +5,8 @@ import { ElMessage, MessageParams } from 'element-plus'
  */
 type Message = ((config: MessageParams) => void) & {
   error: (msg: string) => void
+} & {
+  success: (msg: string) => void
 }
 
 export const message: Message = (config: MessageParams) => {
@@ -24,6 +26,13 @@ message.error = function (msg: string) {
   message({
     message: msg,
     type: 'error',
+  })
+}
+
+message.success = function (msg: string) {
+  message({
+    message: msg,
+    type: 'success',
   })
 }
 

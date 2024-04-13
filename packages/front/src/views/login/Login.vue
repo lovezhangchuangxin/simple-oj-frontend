@@ -22,9 +22,10 @@
           status-icon
         >
           <el-form-item label="用户名" prop="username">
+            <!-- 暂时不支持邮箱 -->
             <el-input
               v-model="loginForm.usernameOrEmail"
-              placeholder="请输入用户名或者邮箱"
+              placeholder="请输入用户名"
             />
           </el-form-item>
           <el-form-item label="密码" prop="password">
@@ -59,7 +60,7 @@
           <el-form-item label="用户名" prop="username">
             <el-input
               v-model="registerForm.username"
-              placeholder="请输入用户名或者邮箱"
+              placeholder="请输入用户名"
               autofocus
             />
           </el-form-item>
@@ -282,18 +283,13 @@ const onSubmit = (formEle?: FormInstance) => {
         const res = await UserApi.login(params)
 
         if (res.code === 0) {
-          message({
-            message: res.msg,
-          })
+          message.success(res.msg)
           const { token, user } = res.data
           localStorage.setItem('token', token)
           userStore.setUserInfo(user)
           router.push('/')
         } else {
-          message({
-            message: res.msg,
-            type: 'error',
-          })
+          message.error(res.msg)
           return false
         }
       } else {
@@ -302,23 +298,15 @@ const onSubmit = (formEle?: FormInstance) => {
           registerForm.verification,
         )
         if (res.code === 0) {
-          message({
-            message: res.msg,
-          })
+          message.success(res.msg)
           setFormType('login')
         } else {
-          message({
-            message: res.msg,
-            type: 'error',
-          })
+          message.error(res.msg)
           return false
         }
       }
     } else {
-      message({
-        message: '格式错误',
-        type: 'error',
-      })
+      message.error('格式错误')
       return false
     }
   })

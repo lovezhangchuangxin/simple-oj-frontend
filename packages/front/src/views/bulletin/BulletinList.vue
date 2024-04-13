@@ -72,16 +72,11 @@ const deleteBulletin = (id: number) => {
   BulletinApi.deleteBulletin(id).then((res) => {
     if (res.code === 0) {
       changePage(page.value, size.value)
-      message({
-        message: '删除成功',
-      })
+      message.success('删除成功')
       return
     }
 
-    message({
-      type: 'error',
-      message: '删除失败',
-    })
+    message.error('删除失败')
   })
 }
 

@@ -25,9 +25,11 @@
             }}</router-link>
           </div>
           <div v-else-if="key === 'tag'" class="tag">
-            <el-tag v-for="tag in row.tag" :key="tag" size="small">{{
-              tag
-            }}</el-tag>
+            <el-space v-if="row.tag">
+              <el-tag v-for="tag in row.tag.split(' ')" :key="tag">{{
+                tag
+              }}</el-tag>
+            </el-space>
           </div>
           <div v-else-if="key === 'passRate'" class="tag">
             <template v-if="row.passRate">
@@ -146,17 +148,12 @@ const goToEditProblem = (id: number) => {
 const deleteProblem = (id: number) => {
   ProblemApi.deleteProblem(id).then((res) => {
     if (res.code === 0) {
-      message({
-        message: res.msg,
-      })
+      message.success(res.msg)
 
       return
     }
 
-    message({
-      type: 'error',
-      message: res.msg,
-    })
+    message.error(res.msg)
   })
 }
 </script>

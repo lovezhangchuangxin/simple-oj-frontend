@@ -75,10 +75,7 @@ const uploadAvatar: UploadRequestHandler = async (option) => {
       message.error('上传失败')
       return false
     }
-    message({
-      type: 'success',
-      message: '上传成功',
-    })
+    message.success('上传成功')
     userStore.setUserInfo({ avatar: res.data })
   })
 }

@@ -206,4 +206,11 @@ export class ProblemApi {
       endTime,
     })
   }
+
+  /**
+   * 调用免费的 gpt 接口
+   */
+  public static callFreeGPT(content: string) {
+    return req<string>('POST', `/problem/gpt`, content)
+  }
 }

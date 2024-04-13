@@ -77,16 +77,11 @@ const submit = async () => {
   const res = await api(opts)
 
   if (res.code === 0) {
-    message({
-      message: '公告发布成功',
-    })
+    message.success('公告发布成功')
     return
   }
 
-  message({
-    type: 'error',
-    message: '公告发布失败',
-  })
+  message.error('公告发布失败')
 }
 </script>
 

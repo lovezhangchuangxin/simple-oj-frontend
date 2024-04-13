@@ -10,10 +10,7 @@ export function useVerification(initTime = 60) {
 
   const sendVerification = async (email: string) => {
     if (!email || !Validator.isEmail(email)) {
-      message({
-        message: '邮箱错误',
-        type: 'error',
-      })
+      message.error('邮箱错误')
       return
     }
 
@@ -34,18 +31,11 @@ export function useVerification(initTime = 60) {
     const res = await UserApi.sendVerification(email)
 
     if (res.code === 0) {
-      message({
-        message: '请求已发送',
-      })
+      message.success('请求已发送')
     } else if (res.code === 1010) {
-      message({
-        message: '验证码已发送',
-      })
+      message.success('验证码已发送')
     } else {
-      message({
-        message: '请求发送失败',
-        type: 'error',
-      })
+      message.error('请求发送失败')
     }
   }
 

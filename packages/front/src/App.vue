@@ -39,7 +39,7 @@ const activeIndex = computed(() => route.path)
 
 // footer 是否显示
 const isFooterShow = computed(() => {
-  return !['/problem/solve/:pname'].includes(route.matched[0]?.path)
+  return route.name !== 'ProblemSolve'
 })
 
 const handleSelect = (key: string) => {
