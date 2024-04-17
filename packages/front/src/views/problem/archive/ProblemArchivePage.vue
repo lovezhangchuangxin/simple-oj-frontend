@@ -97,9 +97,9 @@ const goToTagProblems = (tagName: string) => {
   h2 {
     margin-bottom: 10px;
     font-size: 16px;
-    font-weight: 500;
-    color: #4a5086;
-    text-shadow: rgb(66, 99, 182) 1px 0 10px;
+    // font-weight: 500;
+    color: #5d628a;
+    // text-shadow: rgb(66, 99, 182) 1px 0 10px;
   }
 
   .el-tag {

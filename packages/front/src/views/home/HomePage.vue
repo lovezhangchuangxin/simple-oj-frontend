@@ -2,7 +2,7 @@
   <div>
     <el-container>
       <el-main>
-        <h2 class="title">经典热题</h2>
+        <h2 class="title">热题十道</h2>
         <ProblemList :data="tableData" />
       </el-main>
       <el-aside width="250px">
@@ -64,7 +64,7 @@ main {
   margin-bottom: 10px;
   font-size: 20px;
   font-weight: 500;
-  color: #303133;
+  color: #2e244d;
 }
 
 .contribution {

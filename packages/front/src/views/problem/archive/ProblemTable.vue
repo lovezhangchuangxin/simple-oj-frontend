@@ -157,6 +157,7 @@ const reset = () => {
   tag.value = ''
   title.value = ''
   difficulty.value = 0
+  search()
 }
 </script>
 

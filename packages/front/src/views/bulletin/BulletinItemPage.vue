@@ -68,7 +68,7 @@ main {
     margin-bottom: 10px;
     font-size: 18px;
     font-weight: 500;
-    color: #b378fa;
+    color: #5946a4;
     gap: 6px;
   }
 

@@ -10,7 +10,7 @@ export type Language = (typeof LANGUAGES)[number]
  */
 export const C_CODE_TEMPLATE = `#include <stdio.h>
 
-int main(int argc, char** argv) {
+int main() {
   return 0;
 }
 `
@@ -21,7 +21,7 @@ int main(int argc, char** argv) {
 export const CPP_CODE_TEMPLATE = `#include <iostream>
 using namespace std;
 
-int main(int argc, char** argv) {
+int main() {
   return 0;
 }
 `

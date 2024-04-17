@@ -159,6 +159,18 @@ const deleteProblem = (id: number) => {
 </script>
 
 <style scoped lang="less">
+.title {
+  a {
+    color: #303133;
+    text-decoration: none;
+
+    &:hover {
+      color: #409eff;
+      text-decoration: underline;
+    }
+  }
+}
+
 .el-tag {
   cursor: pointer;
 

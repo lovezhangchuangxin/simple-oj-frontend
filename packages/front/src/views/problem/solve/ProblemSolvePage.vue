@@ -56,7 +56,12 @@
                   :key="index"
                 >
                   <template #label>
-                    <span :style="{ color: getTagColor(results[index]) }">
+                    <span
+                      :style="{
+                        color: getTagColor(results[index]),
+                        fontWeight: 700,
+                      }"
+                    >
                       样例 {{ index + 1 }}
                     </span>
                   </template>
@@ -216,10 +221,10 @@ const submitCode = async () => {
 const getTagColor = (result: { stat: CodeResult; output?: string }) => {
   // WA 红色
   if (result.stat.result || result.output) {
-    return '#ac0000'
+    return '#D51111'
   }
   // AC
-  return '#87d068'
+  return '#67C23A'
 }
 
 // 获取实际结果和预期结果的差异的 html
@@ -290,6 +295,8 @@ const getDiffHtml = (output: string, expected: string) => {
 
     .result-tabs {
       .result-tab {
+        margin-top: -10px;
+
         p {
           margin: 10px 0;
           font-size: 12px;
@@ -312,7 +319,8 @@ const getDiffHtml = (output: string, expected: string) => {
       }
 
       pre {
-        padding: 10px;
+        padding: 20px;
+        margin-bottom: 10px;
         border-radius: 10px;
         background-color: rgb(252, 252, 252);
         white-space: pre-wrap;
