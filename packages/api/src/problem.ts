@@ -117,6 +117,18 @@ export interface CodeResult {
 }
 
 /**
+ * 提交信息
+ */
+export interface SubmitBriefInfo {
+  id: number
+  problemId: number
+  title: string
+  time: number
+  memory: number
+  createTime: string
+}
+
+/**
  * 判断代码执行结果
  */
 export function judgeCodeExecuteStatus(result: CodeResult): CodeExecuteStatus {
@@ -150,6 +162,7 @@ export class ProblemApi {
     return req<{
       problems: ProblemBriefInfo[]
       ids: number[]
+      total: number
     }>('GET', '/problem/list', { page, limit })
   }
 
@@ -201,16 +214,22 @@ export class ProblemApi {
    * 查询一段时间范围内每天的提交记录数
    */
   public static getSubmitCountPerDayByTime(startTime: number, endTime: number) {
-    return req<{ [day: string]: number }>('GET', `/problem/recordByTimeRange`, {
+    return req<{
+      accept: number
+      other: number
+      collect: { [day: string]: number }
+    }>('GET', `/problem/recordByTimeRange`, {
       startTime,
       endTime,
     })
   }
 
   /**
-   * 调用免费的 gpt 接口
+   * 查询最近通过的提交记录
    */
-  public static callFreeGPT(content: string) {
-    return req<string>('POST', `/problem/gpt`, content)
+  public static getRecentAcceptRecord(limit = 10) {
+    return req<SubmitBriefInfo[]>('GET', `/problem/recentAcceptRecord`, {
+      limit,
+    })
   }
 }

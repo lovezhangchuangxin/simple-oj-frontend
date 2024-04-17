@@ -45,6 +45,7 @@ const changePage = async (currentPage: number, pageSize: number) => {
     message.error(res.msg)
   }
   tableData.value = getProblemTableData(res.data)
+  total.value = res.data.total
 }
 
 const goToAddProblem = () => {

@@ -13,6 +13,8 @@ export interface UserInfo {
   password: string
   email: string
   avatar: string
+  // 学号
+  studentId: string
   // 角色，0 普通用户，1 管理员
   role: number
   createTime: string
@@ -74,6 +76,25 @@ export class UserApi {
     formData.append('file', file)
     return req<string>('POST', '/user/avatar', formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
+    })
+  }
+
+  /**
+   * 修改用户信息
+   */
+  public static updateUserInfo(
+    user: Partial<Omit<UserInfo, 'password'>> & { id: number },
+  ) {
+    return req<undefined>('POST', '/user/update', user)
+  }
+
+  /**
+   * 修改密码
+   */
+  public static updatePassword(oldPassword: string, newPassword: string) {
+    return req<undefined>('POST', '/user/updatePassword', {
+      oldPassword,
+      newPassword,
     })
   }
 }

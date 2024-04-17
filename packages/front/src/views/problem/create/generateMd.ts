@@ -26,11 +26,11 @@ const getSampleGroupHtml = (sampleGroup: ProblemContent['sampleGroup']) => {
   return result
 }
 
-export const generateMd = (content: ProblemContent) => {
+export const generateMd = (content: ProblemContent, id?: number) => {
   const { title, description, inputFormat, outputFormat, sampleGroup, hint } =
     content
 
-  return `# ${title}
+  return `# ${id ? id + '. ' : ''}${title}
 
 ## 题目描述
 ${description}

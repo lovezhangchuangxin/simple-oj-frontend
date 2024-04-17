@@ -4,10 +4,7 @@ import { defineStore } from 'pinia'
 /**
  * 用户信息
  */
-type PartialUserInfo = Pick<
-  UserInfo,
-  'id' | 'username' | 'avatar' | 'email' | 'role' | 'createTime' | 'updateTime'
->
+type PartialUserInfo = Omit<UserInfo, 'password'>
 
 export const useUserStore = defineStore('user', {
   state: () =>
@@ -19,6 +16,7 @@ export const useUserStore = defineStore('user', {
       role: 0,
       createTime: '',
       updateTime: '',
+      studentId: '',
     }) as PartialUserInfo,
   actions: {
     setUserInfo(info: Partial<PartialUserInfo>) {

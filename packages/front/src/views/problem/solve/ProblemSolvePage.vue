@@ -95,8 +95,10 @@
                 </el-tab-pane>
               </el-tabs>
               <div class="complie-error" v-show="complieError">
-                <p>编译错误：</p>
+                <p style="color: red">编译错误：</p>
                 <pre v-text="complieError"></pre>
+                <p v-if="apiKey" style="color: green">提示：</p>
+                <MdViewer :value="gptAnalysis"></MdViewer>
               </div>
             </div>
           </pane>
@@ -120,9 +122,11 @@ import {
 import { generateMd } from '../create/generateMd'
 import {
   CodeResult,
+  GPTApi,
   Problem,
   ProblemApi,
   judgeCodeExecuteStatus,
+  readGPTApiKey,
 } from '@simple-oj-frontend/api'
 import { message } from '@/utils/common/common'
 import { statusColorMap } from '../util'
@@ -141,6 +145,8 @@ const complieError = ref('')
 const loading = ref(false)
 const diffRef = ref<HTMLPreElement[]>([])
 const dialogVisible = ref(false)
+const apiKey = readGPTApiKey()
+const gptAnalysis = ref('')
 
 onMounted(async () => {
   if (!qid) {
@@ -154,7 +160,7 @@ onMounted(async () => {
     return
   }
   problem.value = res.data
-  content.value = generateMd(res.data)
+  content.value = generateMd(res.data, res.data.id)
 })
 
 const submitCode = async () => {
@@ -174,6 +180,20 @@ const submitCode = async () => {
     // 将错误信息中的多余的路径信息去掉
     error = error.replace(/\/root\/simple-oj\/code\/\d+\//g, '')
     complieError.value = error
+    gptAnalysis.value = ''
+
+    if (apiKey) {
+      try {
+        const data = await GPTApi.callFreeGpt3(
+          `我的代码是：\n${code.value}\n报错信息是：\n${error}\n请帮我分析一下`,
+          apiKey,
+        )
+        gptAnalysis.value = data.choices[0].message.content
+      } catch (error) {
+        gptAnalysis.value = 'GPT 分析失败'
+      }
+    }
+
     return
   }
 
@@ -289,7 +309,6 @@ const getDiffHtml = (output: string, expected: string) => {
       p {
         margin-bottom: 10px;
         font-size: 14px;
-        color: #ff0000;
       }
 
       pre {

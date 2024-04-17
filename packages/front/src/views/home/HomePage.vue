@@ -51,7 +51,7 @@ onMounted(async () => {
   // 获取最近三个月的提交记录
   const res = await ProblemApi.getSubmitCountPerDayByTime(start, end)
   if (res.code !== 0) return
-  contributionData.value = res.data
+  contributionData.value = res.data.collect
 })
 </script>
 

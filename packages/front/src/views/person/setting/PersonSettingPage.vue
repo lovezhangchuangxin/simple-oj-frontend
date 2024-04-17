@@ -17,16 +17,24 @@
             <el-tag type="primary" v-admin>管理员</el-tag>
           </el-space>
         </h2>
-        <p>创建于 {{ formatTime(createTime) }}</p>
+        <p>注册于 {{ formatTime(createTime) }}</p>
       </div>
     </div>
 
-    <div class="submit">
-      <p>
-        过去一年共提交
-        <span style="font-weight: 500">{{ submitCount }}</span> 次
-      </p>
-      <ContributionBox :from="from" :to="to" :data="contributionData" />
+    <div class="center">
+      <div class="left">
+        <UserBasicInfo style="margin-bottom: 20px" />
+        <ChatAPISetting />
+      </div>
+      <div class="right">
+        <el-tabs v-model="activeName" class="tabs">
+          <el-tab-pane label="提交" name="submit">
+            <UserSubmitRecord />
+          </el-tab-pane>
+          <el-tab-pane label="题解" name="note">题解</el-tab-pane>
+          <el-tab-pane label="收藏" name="star"></el-tab-pane>
+        </el-tabs>
+      </div>
     </div>
   </div>
 </template>
@@ -37,27 +45,16 @@ import type { UploadRequestHandler } from 'element-plus'
 import { Plus } from '@element-plus/icons-vue'
 import { useUserStore } from '@/utils/store'
 import { formatTime, message } from '@/utils/common/common'
-import { ProblemApi, UserApi } from '@simple-oj-frontend/api'
+import { UserApi } from '@simple-oj-frontend/api'
 import vAdmin from '@/utils/directives/admin'
-import { onMounted, ref } from 'vue'
+import UserBasicInfo from './UserBasicInfo.vue'
+import ChatAPISetting from './ChatAPISetting.vue'
+import UserSubmitRecord from './UserSubmitRecord.vue'
+import { ref } from 'vue'
 
 const userStore = useUserStore()
 const { username, avatar, createTime } = storeToRefs(userStore)
-
-const contributionData = ref<{ [day: string]: number }>({})
-const end = Date.now()
-const start = end - 12 * 30 * 1000 * 60 * 60 * 24
-const to = new Date(end).toISOString().split('T')[0]
-const from = new Date(start).toISOString().split('T')[0]
-const submitCount = ref(0)
-
-onMounted(async () => {
-  // 获取最近一年的提交记录
-  const res = await ProblemApi.getSubmitCountPerDayByTime(start, end)
-  if (res.code !== 0) return
-  contributionData.value = res.data
-  submitCount.value = Object.values(res.data).reduce((acc, cur) => acc + cur, 0)
-})
+const activeName = ref('submit')
 
 const uploadAvatar: UploadRequestHandler = async (option) => {
   const file = option.file
@@ -110,15 +107,21 @@ const uploadAvatar: UploadRequestHandler = async (option) => {
     }
   }
 
-  .submit {
-    display: inline-block;
-    border-radius: 8px;
-    padding: 20px;
-    box-shadow: 0 2px 10px 0 rgba(0, 0, 0, 0.1);
+  .center {
+    display: flex;
+    gap: 20px;
 
-    p {
-      font-size: 14px;
-      margin-bottom: 10px;
+    .left {
+      padding: 20px 15px;
+      width: 250px;
+      height: 240px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px 0 rgba(0, 0, 0, 0.1);
+    }
+
+    .right {
+      // 剩余空间全部占满
+      flex: 1;
     }
   }
 }

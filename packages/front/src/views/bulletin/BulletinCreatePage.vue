@@ -65,6 +65,10 @@ onMounted(async () => {
 })
 
 const submit = async () => {
+  if (!title.value || !content.value) {
+    message.error('标题和内容不能为空')
+    return
+  }
   const api = isEdit ? BulletinApi.updateBulletin : BulletinApi.addBulletin
   const opts: BulletinBaseInfo & Partial<Bulletin> = {
     title: title.value,

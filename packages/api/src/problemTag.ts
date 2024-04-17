@@ -1,4 +1,5 @@
 import { req } from './core'
+import { Problem } from './problem'
 
 export class ProblemTagApi {
   /**
@@ -11,8 +12,15 @@ export class ProblemTagApi {
   /**
    * 查询标签对应的问题
    */
-  public static queryProblemByTag(tag: string) {
-    return req<number[]>('GET', `/problemTag/tag/${tag}`)
+  public static queryProblemByTag(tag: string, page: number, limit: number) {
+    return req<{
+      problems: Problem[]
+      total: number
+    }>('GET', `/problemTag/tag`, {
+      tag,
+      page,
+      limit,
+    })
   }
 
   /**

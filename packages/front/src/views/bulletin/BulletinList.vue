@@ -16,10 +16,7 @@
           <el-button type="primary" size="small" @click="editBulletin(row.id)">
             编辑
           </el-button>
-          <el-popconfirm
-            title="Are you sure to delete this?"
-            @confirm="deleteBulletin(row.id)"
-          >
+          <el-popconfirm title="确认删除吗？" @confirm="deleteBulletin(row.id)">
             <template #reference>
               <el-button type="danger" size="small">删除</el-button>
             </template>
@@ -71,7 +68,7 @@ const editBulletin = (id: number) => {
 const deleteBulletin = (id: number) => {
   BulletinApi.deleteBulletin(id).then((res) => {
     if (res.code === 0) {
-      changePage(page.value, size.value)
+      changePage(page.value + 1, size.value)
       message.success('删除成功')
       return
     }

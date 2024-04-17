@@ -16,3 +16,14 @@ body {
     Segoe UI Emoji;
   background-color: #fff;
 }
+
+/* 单行溢出省略 */
+.ellipsis {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+li {
+  list-style: none;
+}

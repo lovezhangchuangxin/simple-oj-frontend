@@ -130,7 +130,15 @@ import { message } from '@/utils/common/common'
 import { useState } from '@/utils/hooks/useState'
 import { useVerification } from '@/utils/hooks/useVerification'
 import { UserApi } from '@simple-oj-frontend/api'
-import { Validator } from '@simple-oj-frontend/shared'
+import {
+  Validator,
+  ValidatorCallBack,
+  validateEmail,
+  validatePassword,
+  validateUsername,
+  validateUsernameOrEmail,
+  validateVerification,
+} from '@simple-oj-frontend/shared'
 import { useUserStore } from '@/utils/store'
 import { useRouter } from 'vue-router'
 
@@ -158,56 +166,6 @@ const registerForm = reactive({
   verification: '',
 })
 
-type ValidatorCallBack = (error?: string | Error) => void
-
-const validateUsernameOrEmail = (
-  _: unknown,
-  value: string,
-  callback: ValidatorCallBack,
-) => {
-  if (!value) {
-    return callback('用户名不能为空')
-  }
-
-  if (!Validator.isUsername(value) && !Validator.isEmail(value)) {
-    return callback('用户名或邮箱错误')
-  }
-
-  callback()
-}
-
-const validateUsername = (
-  _: unknown,
-  value: string,
-  callback: ValidatorCallBack,
-) => {
-  if (!value) {
-    return callback('用户名不能为空')
-  }
-
-  if (!Validator.isUsername(value)) {
-    return callback('仅支持中文、字母和数字，且长度为4到16')
-  }
-
-  callback()
-}
-
-const validatePassword = (
-  _: unknown,
-  value: string,
-  callback: ValidatorCallBack,
-) => {
-  if (!value) {
-    return callback('密码不能为空')
-  }
-
-  if (!Validator.isPassword(value)) {
-    return callback('仅支持字母、数字，且长度为6到16')
-  }
-
-  callback()
-}
-
 const validatePassword2 = (
   _: unknown,
   value: string,
@@ -219,34 +177,6 @@ const validatePassword2 = (
 
   if (registerForm.password && value !== registerForm.password) {
     return callback('两次输入密码不一致')
-  }
-
-  callback()
-}
-
-const validateEmail = (
-  _: unknown,
-  value: string,
-  callback: ValidatorCallBack,
-) => {
-  if (!value) {
-    return callback('邮箱不能为空')
-  }
-
-  if (!Validator.isEmail(value)) {
-    return callback('不支持该邮箱格式')
-  }
-
-  callback()
-}
-
-const validateVerification = (
-  _: unknown,
-  value: string,
-  callback: ValidatorCallBack,
-) => {
-  if (!value) {
-    return callback('验证码不能为空')
   }
 
   callback()
@@ -280,6 +210,7 @@ const onSubmit = (formEle?: FormInstance) => {
               password: loginForm.password,
             }
           : { email: loginForm.usernameOrEmail, password: loginForm.password }
+        console.log(params)
         const res = await UserApi.login(params)
 
         if (res.code === 0) {

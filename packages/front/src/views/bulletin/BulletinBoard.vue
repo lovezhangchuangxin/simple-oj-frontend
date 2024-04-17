@@ -12,6 +12,7 @@
         v-for="{ title, id } in bulletins"
         :key="id"
         @click="goToBulletinItemPage(id)"
+        class="ellipsis"
       >
         {{ title }}
       </li>
@@ -79,9 +80,6 @@ const goToBulletinItemPage = (id: number) => {
 
     li {
       margin-bottom: 10px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
 
       &:hover {
         cursor: pointer;
