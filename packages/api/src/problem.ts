@@ -14,6 +14,8 @@ export interface Problem extends ProblemContent {
   submitCount: number
   // 通过数
   acceptCount: number
+  // 难度 0 无 1 简单 2 中等 3 困难
+  difficulty: number
   // 创建时间
   createTime: string
   // 更新时间
@@ -80,7 +82,7 @@ export enum CodeExecuteStatus {
  */
 export type ProblemBriefInfo = Pick<
   Problem,
-  'id' | 'title' | 'tag' | 'submitCount' | 'acceptCount'
+  'id' | 'title' | 'tag' | 'submitCount' | 'acceptCount' | 'difficulty'
 >
 
 /**
@@ -167,6 +169,23 @@ export class ProblemApi {
   }
 
   /**
+   * 分页条件查询
+   */
+  public static getProblemListByCondition(
+    page: number,
+    limit: number,
+    title: string,
+    tag: string,
+    difficulty: number,
+  ) {
+    return req<{ problems: ProblemBriefInfo[]; ids: number[]; total: number }>(
+      'GET',
+      '/problem/listByCondition',
+      { page, limit, title, tag, difficulty },
+    )
+  }
+
+  /**
    * 获取题目
    */
   public static getProblemById(id: number) {
@@ -184,7 +203,9 @@ export class ProblemApi {
    * 更新题目
    */
   public static updateProblem(
-    content: Partial<ProblemContent & { tag: string; description: string }> & {
+    content: Partial<
+      ProblemContent & { tag: string; description: string; difficulty: number }
+    > & {
       id: number
     },
   ) {

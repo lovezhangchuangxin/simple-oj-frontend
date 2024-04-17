@@ -20,21 +20,28 @@ export const getProblemTableData = ({
 }) => {
   const idsSet = new Set(ids)
   return problems.map((problem) => {
-    const { id, title, tag } = problem
+    const { id, title, tag, difficulty } = problem
     let { submitCount, acceptCount } = problem
+    // 初始无数据时防止除零
     if (!submitCount) submitCount = 2
     if (!acceptCount) acceptCount = 1
 
     const passRate = acceptCount / submitCount
-    const difficulty =
-      passRate > 0.5 ? '简单' : passRate > 0.3 ? '中等' : '困难'
+    let difficultyStr = '无'
+    if (difficulty === 1) {
+      difficultyStr = '简单'
+    } else if (difficulty === 2) {
+      difficultyStr = '中等'
+    } else if (difficulty === 3) {
+      difficultyStr = '困难'
+    }
 
     return {
       status: idsSet.has(problem.id) ? 2 : 0,
       id,
       title,
       tag,
-      difficulty,
+      difficulty: difficultyStr,
       passRate,
     } as ProblemShowItem
   })

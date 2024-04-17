@@ -26,7 +26,7 @@
           </div>
           <div v-else-if="key === 'tag'" class="tag">
             <el-space v-if="row.tag">
-              <el-tag v-for="tag in row.tag.split(' ')" :key="tag">{{
+              <el-tag v-for="tag in row.tag.trim().split(' ')" :key="tag">{{
                 tag
               }}</el-tag>
             </el-space>
@@ -158,4 +158,12 @@ const deleteProblem = (id: number) => {
 }
 </script>
 
-<style scoped></style>
+<style scoped lang="less">
+.el-tag {
+  cursor: pointer;
+
+  &:hover {
+    background-color: #eeeeee;
+  }
+}
+</style>

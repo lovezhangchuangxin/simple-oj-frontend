@@ -3,6 +3,13 @@ import { Problem } from './problem'
 
 export class ProblemTagApi {
   /**
+   * 查询所有标签
+   */
+  public static listAllTag() {
+    return req<string[]>('GET', `/problemTag/list`)
+  }
+
+  /**
    * 查询问题对应的标签
    */
   public static queryTagByProblem(problemId: number) {
