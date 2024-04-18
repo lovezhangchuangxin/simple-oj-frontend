@@ -59,7 +59,6 @@ const userStore = useUserStore()
 onMounted(async () => {
   if (isEdit) {
     const res = await ProblemNoteApi.getProblemNoteById(id)
-    console.log(res)
     if (res.code === 0) {
       title.value = res.data.title
       content.value = res.data.content

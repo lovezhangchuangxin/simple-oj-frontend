@@ -25,7 +25,6 @@ instance.interceptors.request.use(
 // 响应拦截器
 instance.interceptors.response.use(
   (response) => {
-    console.log(response)
     // '401'
     if (response.data.code == 401) {
       localStorage.removeItem('token')

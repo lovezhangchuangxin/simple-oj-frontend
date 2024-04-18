@@ -196,8 +196,6 @@ const changePassword = async () => {
     return
   }
 
-  console.log(passwordForm.password)
-
   loading2.value = true
   const res = await UserApi.updatePassword(
     passwordForm.password,
