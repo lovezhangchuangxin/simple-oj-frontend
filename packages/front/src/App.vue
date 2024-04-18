@@ -106,7 +106,10 @@ header {
 }
 
 main {
-  padding: 24px @padding;
+  // padding: 24px @padding;
+  width: calc(1600px / 1.25);
+  margin: 0 auto;
+  padding: 24px 0;
 }
 
 footer {

@@ -26,7 +26,7 @@ export const getProblemTableData = ({
     if (!submitCount) submitCount = 2
     if (!acceptCount) acceptCount = 1
 
-    const passRate = Number((acceptCount / submitCount).toFixed(4))
+    const passRate = Number((acceptCount / submitCount).toFixed(2))
     let difficultyStr = '无'
     if (difficulty === 1) {
       difficultyStr = '简单'
