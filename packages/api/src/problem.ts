@@ -16,6 +16,8 @@ export interface Problem extends ProblemContent {
   acceptCount: number
   // 难度 0 无 1 简单 2 中等 3 困难
   difficulty: number
+  // 是否接收题解
+  acceptNote: boolean
   // 创建时间
   createTime: string
   // 更新时间
@@ -204,7 +206,12 @@ export class ProblemApi {
    */
   public static updateProblem(
     content: Partial<
-      ProblemContent & { tag: string; description: string; difficulty: number }
+      ProblemContent & {
+        tag: string
+        description: string
+        difficulty: number
+        acceptNote: boolean
+      }
     > & {
       id: number
     },

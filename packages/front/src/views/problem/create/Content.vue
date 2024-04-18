@@ -1,7 +1,5 @@
 <template>
   <div class="problem-content">
-    <p>以下表单最好都填</p>
-
     <form>
       <div>
         <h4>题目名称</h4>
@@ -165,7 +163,7 @@ import 'highlight.js/styles/default.css'
 import math from '@bytemd/plugin-math'
 import 'katex/dist/katex.css'
 
-import { nextTick, onMounted, reactive, ref } from 'vue'
+import { nextTick, reactive, ref, toRefs, watch } from 'vue'
 import { Plus } from '@element-plus/icons-vue'
 import { message } from '@/utils/common/common'
 import MdViewer from '@/components/md-viewer/MdViewer.vue'
@@ -173,10 +171,18 @@ import {
   ProblemContent,
   ProblemApi,
   ResponseData,
+  Problem,
 } from '@simple-oj-frontend/api'
 import { generateMd } from './generateMd'
 import { useUserStore } from '@/utils/store'
 import { useRoute } from 'vue-router'
+
+const props = defineProps<{
+  problem?: Problem
+  isEdit?: boolean
+}>()
+
+const { problem, isEdit } = toRefs(props)
 
 const plugins = [gfm(), highlight(), math()]
 const userStore = useUserStore()
@@ -230,18 +236,14 @@ const md = ref('')
 
 const route = useRoute()
 const id = Number(route.query.id)
-const isEdit = id > 0
 
-onMounted(async () => {
-  if (isEdit) {
-    const res = await ProblemApi.getProblemById(id)
-    if (res.code === 0) {
-      for (let key in res.data) {
-        if (key in content) {
-          const k = key as keyof ProblemContent
-          // @ts-ignore
-          content[k] = res.data[k]
-        }
+watch(problem, (newProblem) => {
+  if (newProblem) {
+    for (let key in newProblem) {
+      if (key in content) {
+        const k = key as keyof ProblemContent
+        // @ts-ignore
+        content[k] = newProblem[k]
       }
     }
   }
@@ -278,7 +280,7 @@ const confirmClick = async () => {
   drawer.value = false
 
   let res: ResponseData<unknown>
-  res = isEdit
+  res = isEdit.value
     ? await ProblemApi.updateProblem({ ...content, id })
     : await ProblemApi.createProblem(content)
   if (res.code === 0) {
@@ -336,7 +338,13 @@ const confirmClick = async () => {
   h4,
   h5,
   h6 {
+    margin-top: 0;
+    margin-bottom: 12px;
     border: none;
+  }
+
+  h1 {
+    margin-bottom: 8px;
   }
 
   .sample {

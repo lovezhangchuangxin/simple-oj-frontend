@@ -49,6 +49,13 @@ const handleSelect = (key: string) => {
 
 const userStore = useUserStore()
 
+const refreshToken = async () => {
+  const res = await UserApi.refreshToken()
+  if (res.code === 0) {
+    localStorage.setItem('token', res.data)
+  }
+}
+
 onMounted(() => {
   // 初次加载时，请求用户信息
   const token = localStorage.getItem('token')
@@ -66,6 +73,11 @@ onMounted(() => {
       router.replace('/')
     }
   })
+
+  // 每隔一定时间刷新 token
+  setInterval(refreshToken, 5 * 60 * 1000)
+  // 上线时立即刷新一次 token
+  setTimeout(refreshToken, 10 * 1000)
 })
 </script>
 

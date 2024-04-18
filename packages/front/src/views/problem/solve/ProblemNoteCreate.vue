@@ -1,17 +1,17 @@
 <template>
-  <div class="bulletin-create">
+  <div class="problem-note-create">
     <div class="title">
-      <span>公告标题：</span>
+      <span>题解标题：</span>
       <el-input
         v-model="title"
         style="width: 240px"
-        placeholder="请输入公告标题"
+        placeholder="请输入题解标题"
       />
     </div>
     <Editor
       :value="content"
       :plugins="plugins"
-      @change="(value: string) => (content = value)"
+      @change="setContent"
       style="width: 100%"
     />
     <div style="text-align: center; margin-top: 20px">
@@ -35,31 +35,34 @@ import 'highlight.js/styles/default.css'
 // 支持数学公式
 import math from '@bytemd/plugin-math'
 import 'katex/dist/katex.css'
+
 import { onMounted, ref } from 'vue'
-import {
-  Bulletin,
-  BulletinApi,
-  BulletinBaseInfo,
-} from '@simple-oj-frontend/api'
-import { useUserStore } from '@/utils/store'
+import { useState } from '@/utils/hooks/useState'
 import { message } from '@/utils/common/common'
 import { useRoute } from 'vue-router'
+import { ProblemNote, ProblemNoteApi } from '@simple-oj-frontend/api'
+import { useUserStore } from '@/utils/store'
 
 const plugins = [gfm(), highlight(), math()]
 const title = ref('')
-const content = ref('')
-const userStore = useUserStore()
+const [content, setContent] = useState('')
+
 const route = useRoute()
+// 题解 id
 const id = Number(route.query.id)
+// 题目 id
+const qid = parseInt(route.params.qid as string) || 0
 // 是否是编辑状态
 const isEdit = id > 0
+const userStore = useUserStore()
 
 onMounted(async () => {
   if (isEdit) {
-    const res = await BulletinApi.getBulletinById(id)
+    const res = await ProblemNoteApi.getProblemNoteById(id)
+    console.log(res)
     if (res.code === 0) {
-      title.value = res.data.data.title
-      content.value = res.data.data.content
+      title.value = res.data.title
+      content.value = res.data.content
     }
   }
 })
@@ -69,11 +72,19 @@ const submit = async () => {
     message.error('标题和内容不能为空')
     return
   }
-  const api = isEdit ? BulletinApi.updateBulletin : BulletinApi.addBulletin
-  const opts: BulletinBaseInfo & Partial<Bulletin> = {
+
+  const api = isEdit
+    ? ProblemNoteApi.updateProblemNote
+    : ProblemNoteApi.addProblemNote
+  const opts: Pick<
+    ProblemNote,
+    'problemId' | 'title' | 'authorId' | 'content'
+  > &
+    Partial<ProblemNote> = {
     title: title.value,
-    authorId: userStore.id,
     content: content.value,
+    problemId: qid,
+    authorId: userStore.id,
   }
   if (isEdit) {
     opts.id = id
@@ -81,16 +92,16 @@ const submit = async () => {
   const res = await api(opts)
 
   if (res.code === 0) {
-    message.success('公告发布成功')
+    message.success('题解提交成功')
     return
   }
 
-  message.error('公告发布失败')
+  message.error(res.msg)
 }
 </script>
 
 <style scoped lang="less">
-.bulletin-create {
+.problem-note-create {
   .title {
     margin-bottom: 20px;
   }

@@ -49,7 +49,7 @@ const userStore = useUserStore()
 
 // 个人设置
 const goToPersonSetting = () => {
-  router.push('/person/setting')
+  router.push('/person/setting/submit')
 }
 
 // 题目管理

@@ -97,4 +97,18 @@ export class UserApi {
       newPassword,
     })
   }
+
+  /**
+   * 刷新 token
+   */
+  public static refreshToken() {
+    return req<string>('GET', '/user/refreshToken')
+  }
+
+  /**
+   * 重置密码
+   */
+  public static resetPassword(email: string) {
+    return req<undefined>('POST', '/user/resetPassword', { email })
+  }
 }

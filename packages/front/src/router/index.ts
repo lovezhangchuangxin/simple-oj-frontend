@@ -51,12 +51,29 @@ const routes: Array<RouteRecordRaw> = [
         name: 'ProblemCreate',
         component: () => import('@/views/problem/create/ProblemCreatePage.vue'),
       },
+      {
+        path: ':qid/note/create',
+        name: 'ProblemNoteCreate',
+        component: () => import('@/views/problem/solve/ProblemNoteCreate.vue'),
+      },
     ],
   },
   {
     path: '/person/setting',
     name: 'PersonSetting',
     component: () => import('@/views/person/setting/PersonSettingPage.vue'),
+    children: [
+      {
+        path: 'submit',
+        name: 'UserSubmit',
+        component: () => import('@/views/person/setting/UserSubmitRecord.vue'),
+      },
+      {
+        path: 'note',
+        name: 'UserProblemNote',
+        component: () => import('@/views/person/setting/UserProblemNote.vue'),
+      },
+    ],
   },
   {
     path: '/bulletin',

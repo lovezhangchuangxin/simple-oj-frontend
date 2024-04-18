@@ -210,7 +210,6 @@ const onSubmit = (formEle?: FormInstance) => {
               password: loginForm.password,
             }
           : { email: loginForm.usernameOrEmail, password: loginForm.password }
-        console.log(params)
         const res = await UserApi.login(params)
 
         if (res.code === 0) {

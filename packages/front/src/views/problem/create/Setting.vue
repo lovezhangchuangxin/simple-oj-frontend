@@ -28,30 +28,76 @@
         </el-button>
       </el-space>
     </div>
+
+    <h2>题目难度</h2>
+    <div v-if="!isEdit">
+      <p>请先创建题目，再添加题目难度</p>
+    </div>
+    <el-select
+      v-else
+      v-model="difficulty"
+      placeholder="请选择题目难度"
+      style="width: 200px"
+      @change="setDifficulty"
+    >
+      <el-option
+        v-for="item in difficultyOptions"
+        :key="item.value"
+        :label="item.label"
+        :value="item.value"
+      >
+        {{ item.label }}
+      </el-option>
+    </el-select>
+
+    <h2>是否接受题解</h2>
+    <div v-if="!isEdit">
+      <p>请先创建题目，再设置是否接受题解</p>
+    </div>
+    <el-switch
+      v-else
+      v-model="acceptNote"
+      active-text="是"
+      inactive-text="否"
+      @change="setIsAcceptNote"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
 import { message } from '@/utils/common/common'
-import { ProblemTagApi } from '@simple-oj-frontend/api'
+import { Problem, ProblemApi, ProblemTagApi } from '@simple-oj-frontend/api'
 import { ElInput } from 'element-plus'
-import { nextTick, onMounted, ref } from 'vue'
+import { nextTick, ref, toRefs, watch } from 'vue'
 import { useRoute } from 'vue-router'
+
+const props = defineProps<{
+  problem?: Problem
+  isEdit?: boolean
+}>()
+
+const { problem, isEdit } = toRefs(props)
 
 const route = useRoute()
 const id = Number(route.query.id)
-const isEdit = id > 0
 const problemTags = ref<string[]>([])
 const inputVisible = ref(false)
 const inputValue = ref('')
 const InputRef = ref<InstanceType<typeof ElInput>>()
+const difficulty = ref(0)
+const difficultyOptions = [
+  { value: 0, label: '无' },
+  { value: 1, label: '简单' },
+  { value: 2, label: '中等' },
+  { value: 3, label: '困难' },
+]
+const acceptNote = ref(false)
 
-onMounted(async () => {
-  if (isEdit) {
-    const res = await ProblemTagApi.queryTagByProblem(id)
-    if (res.code === 0 && res.data.trim()) {
-      problemTags.value = res.data.trim().split(' ')
-    }
+watch(problem, (newProblem) => {
+  if (newProblem) {
+    problemTags.value = newProblem.tag ? newProblem.tag.trim().split(' ') : []
+    difficulty.value = newProblem.difficulty
+    acceptNote.value = newProblem.acceptNote
   }
 })
 
@@ -87,13 +133,42 @@ const handleInputConfirm = async () => {
     message.error(res.msg)
   }
 }
+
+const setDifficulty = async () => {
+  const res = await ProblemApi.updateProblem({
+    difficulty: difficulty.value,
+    id,
+  })
+  if (res.code === 0) {
+    message.success('设置题目难度成功')
+  } else {
+    message.error(res.msg)
+  }
+}
+
+const setIsAcceptNote = async () => {
+  const res = await ProblemApi.updateProblem({
+    acceptNote: acceptNote.value,
+    id,
+  })
+  if (res.code === 0) {
+    message.success('设置是否接受题解成功')
+  } else {
+    message.error(res.msg)
+  }
+}
 </script>
 
 <style scoped lang="less">
 .problem-setting-page {
   h2 {
-    margin-bottom: 10px;
+    margin: 15px 0;
     font-size: 16px;
+    color: #353039;
+
+    &:first-child {
+      margin-top: 5px;
+    }
   }
 
   .tag-input {

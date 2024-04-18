@@ -25,9 +25,12 @@ instance.interceptors.request.use(
 // 响应拦截器
 instance.interceptors.response.use(
   (response) => {
-    if (response.data.code === 401) {
+    console.log(response)
+    // '401'
+    if (response.data.code == 401) {
       localStorage.removeItem('token')
       window.location.href = '/login'
+      response.data.msg = 'token过期，请重新登录'
     }
 
     return response

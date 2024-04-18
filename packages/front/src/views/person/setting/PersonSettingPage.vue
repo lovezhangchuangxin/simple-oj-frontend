@@ -31,8 +31,9 @@
           <el-tab-pane label="提交" name="submit">
             <UserSubmitRecord />
           </el-tab-pane>
-          <el-tab-pane label="题解" name="note">题解</el-tab-pane>
-          <el-tab-pane label="收藏" name="star"></el-tab-pane>
+          <el-tab-pane label="题解" name="note" lazy>
+            <UserProblemNote />
+          </el-tab-pane>
         </el-tabs>
       </div>
     </div>
@@ -50,6 +51,7 @@ import vAdmin from '@/utils/directives/admin'
 import UserBasicInfo from './UserBasicInfo.vue'
 import ChatAPISetting from './ChatAPISetting.vue'
 import UserSubmitRecord from './UserSubmitRecord.vue'
+import UserProblemNote from './UserProblemNote.vue'
 import { ref } from 'vue'
 
 const userStore = useUserStore()
@@ -122,6 +124,10 @@ const uploadAvatar: UploadRequestHandler = async (option) => {
     .right {
       // 剩余空间全部占满
       flex: 1;
+
+      .tabs {
+        margin-top: -10px;
+      }
     }
   }
 }

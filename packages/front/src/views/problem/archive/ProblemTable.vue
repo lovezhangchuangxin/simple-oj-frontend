@@ -185,6 +185,7 @@ const reset = () => {
           font-size: 14px;
           cursor: pointer;
           padding: 8px 20px;
+          list-style: none;
 
           &:hover {
             color: #409eff;

@@ -1,7 +1,5 @@
 <template>
-  <div>
-    <p>暂时不支持special judge，敬请期待</p>
-  </div>
+  <div>题解</div>
 </template>
 
 <script setup lang="ts"></script>

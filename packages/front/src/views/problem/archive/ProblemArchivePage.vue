@@ -50,44 +50,6 @@ const goToTagProblems = (tagName: string) => {
 </script>
 
 <style scoped lang="less">
-.problem-table {
-  .search {
-    margin-bottom: 10px;
-
-    .search-tag {
-      position: relative;
-
-      ul {
-        position: absolute;
-        top: 110%;
-        left: 0;
-        width: 100%;
-        background-color: #fff;
-        border: 1px solid #ebeef5;
-        border-radius: 5px;
-        box-shadow: 0 2px 10px 0 rgba(0, 0, 0, 0.1);
-        z-index: 10;
-
-        li {
-          color: #606266;
-          font-size: 14px;
-          cursor: pointer;
-          padding: 8px 20px;
-
-          &:hover {
-            color: #409eff;
-            background-color: #f5f7fa;
-          }
-        }
-      }
-    }
-  }
-
-  .table {
-    margin-bottom: 20px;
-  }
-}
-
 .tag-list {
   padding: 10px;
   background-color: #fff;

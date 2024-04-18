@@ -160,6 +160,7 @@ onMounted(async () => {
         color: #303133;
         border-radius: 5px;
         cursor: pointer;
+        list-style: none;
 
         &:nth-child(odd) {
           background-color: #f2f3f4;

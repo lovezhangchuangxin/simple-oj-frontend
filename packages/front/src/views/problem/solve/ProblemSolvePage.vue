@@ -3,9 +3,20 @@
     <splitpanes class="default-theme">
       <pane size="45">
         <el-scrollbar>
-          <div class="viewer-wrapper" style="min-width: 400px; overflow: auto">
-            <MdViewer :value="content"></MdViewer>
-          </div>
+          <el-tabs v-model="activeName" class="problem-tabs">
+            <el-tab-pane label="题目内容" name="content">
+              <ProblemContent :content="content" />
+            </el-tab-pane>
+            <el-tab-pane label="题解" name="note" lazy>
+              <ProblemNote
+                :problemId="qid"
+                :acceptNote="!!problem?.acceptNote"
+              />
+            </el-tab-pane>
+            <el-tab-pane label="提交记录" name="submit" lazy>
+              <ProblemSubmitRecord />
+            </el-tab-pane>
+          </el-tabs>
         </el-scrollbar>
       </pane>
       <pane size="55">
@@ -114,11 +125,10 @@
 </template>
 
 <script setup lang="ts">
-import { nextTick, onMounted, ref } from 'vue'
-import { useRoute } from 'vue-router'
+import { nextTick, onMounted, ref, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { Splitpanes, Pane } from 'splitpanes'
 import 'splitpanes/dist/splitpanes.css'
-import MdViewer from '@/components/md-viewer/MdViewer.vue'
 import CodeEditor from '@/components/monaco-editor/CodeEditor.vue'
 import {
   LANGUAGE_TYPE_MAP,
@@ -136,11 +146,16 @@ import {
 import { message } from '@/utils/common/common'
 import { statusColorMap } from '../util'
 import { diffChars } from 'diff'
+import ProblemContent from './ProblemContent.vue'
+import ProblemNote from './ProblemNote.vue'
+import ProblemSubmitRecord from './ProblemSubmitRecord.vue'
 
 const route = useRoute()
+const router = useRouter()
 // 题目 id
 const qid = parseInt(route.params.qid as string) || 0
-
+const tab = route.query.tab as string
+const activeName = ref(tab || 'content')
 const problem = ref<Problem | null>(null)
 const content = ref('')
 const lang = ref<LanguageName>('C')
@@ -166,6 +181,14 @@ onMounted(async () => {
   }
   problem.value = res.data
   content.value = generateMd(res.data, res.data.id)
+})
+
+watch(activeName, (name) => {
+  router.push({
+    query: {
+      tab: name,
+    },
+  })
 })
 
 const submitCode = async () => {
@@ -261,6 +284,10 @@ const getDiffHtml = (output: string, expected: string) => {
     }
   }
 
+  .problem-tabs {
+    margin-top: -10px;
+  }
+
   .result-show {
     padding: 10px;
 
@@ -337,26 +364,6 @@ const getDiffHtml = (output: string, expected: string) => {
         Consolas,
         Liberation Mono,
         monospace;
-    }
-  }
-}
-
-:deep(.markdown-body) {
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6 {
-    border: none;
-  }
-
-  .sample {
-    display: flex;
-    gap: 20px;
-
-    & > div {
-      flex: 1;
     }
   }
 }
