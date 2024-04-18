@@ -71,12 +71,12 @@ export interface ProblemSolveRecord {
  * 代码执行状态
  */
 export enum CodeExecuteStatus {
-  AC = 'AC',
-  WA = 'WA',
-  TLE = 'TLE',
-  MLE = 'MLE',
-  RE = 'RE',
-  CE = 'CE',
+  AC = 1,
+  WA,
+  TLE,
+  MLE,
+  RE,
+  CE,
 }
 
 /**
@@ -259,5 +259,40 @@ export class ProblemApi {
     return req<SubmitBriefInfo[]>('GET', `/problem/recentAcceptRecord`, {
       limit,
     })
+  }
+
+  /**
+   * 分页条件查询提交记录
+   */
+  public static querySubmitRecordByPage(
+    page: number,
+    limit: number,
+    problemId: number,
+    userId: number,
+    status: number,
+  ) {
+    const data: {
+      page: number
+      limit: number
+      problemId?: number
+      userId?: number
+      status?: number
+    } = { page, limit }
+    if (problemId) {
+      data.problemId = problemId
+    }
+    if (userId) {
+      data.userId = userId
+    }
+    if (status) {
+      data.status = status
+    }
+
+    return req<{
+      data: ProblemSolveRecord[]
+      total: number
+      userMap: Record<number, { username: string; avatar: string }>
+      problemMap: Record<number, { title: string; difficulty: number }>
+    }>('GET', `/problem/recordByCondition`, data)
   }
 }

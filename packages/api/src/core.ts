@@ -29,7 +29,7 @@ instance.interceptors.response.use(
     // '401'
     if (response.data.code == 401) {
       localStorage.removeItem('token')
-      window.location.href = '/login'
+      window.location.href = '/#/login'
       response.data.msg = 'token过期，请重新登录'
     }
 

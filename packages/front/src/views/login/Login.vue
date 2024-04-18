@@ -44,7 +44,25 @@
               >登录</el-button
             >
           </el-form-item>
-          <el-link type="primary" href>忘记密码</el-link>
+          <el-link type="primary" href @click="dialogVisible = true"
+            >忘记密码</el-link
+          >
+          <el-dialog v-model="dialogVisible" title="重置密码" width="500">
+            <p style="margin-bottom: 16px">
+              我们将给你的邮箱发送重置后的密码，获取密码后
+              <b>请立即登录修改密码</b>
+            </p>
+            <el-input v-model="myEmail" placeholder="请输入邮箱" />
+
+            <template #footer>
+              <div class="dialog-footer">
+                <el-button @click="cancel">取消</el-button>
+                <el-button type="primary" @click="resetPassword"
+                  >确认</el-button
+                >
+              </div>
+            </template>
+          </el-dialog>
         </el-form>
       </template>
       <template v-else>
@@ -141,6 +159,9 @@ import {
 } from '@simple-oj-frontend/shared'
 import { useUserStore } from '@/utils/store'
 import { useRouter } from 'vue-router'
+
+const dialogVisible = ref(false)
+const myEmail = ref('')
 
 const [formType, setFormType] = useState<'login' | 'register'>('login')
 const changeFormType = () => {
@@ -240,6 +261,31 @@ const onSubmit = (formEle?: FormInstance) => {
       return false
     }
   })
+}
+
+const cancel = () => {
+  dialogVisible.value = false
+}
+
+const resetPassword = async () => {
+  const email = myEmail.value
+  if (!email) {
+    message.error('请输入邮箱')
+    return
+  }
+
+  if (!Validator.isEmail(email)) {
+    message.error('邮箱格式错误')
+    return
+  }
+
+  const res = await UserApi.resetPassword(email)
+  if (res.code === 0) {
+    message.success('已发送重置密码邮件，请查收')
+    dialogVisible.value = false
+  } else {
+    message.error(res.msg)
+  }
 }
 </script>
 
