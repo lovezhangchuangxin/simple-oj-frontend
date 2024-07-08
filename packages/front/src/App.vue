@@ -15,7 +15,8 @@
         <el-menu-item index="/problems">题库</el-menu-item>
         <!-- 待办 -->
         <!-- <el-menu-item index="/contest">竞赛</el-menu-item> -->
-        <el-menu-item index="/forum">论坛</el-menu-item>
+        <!-- <el-menu-item index="/forum">论坛</el-menu-item> -->
+        <el-menu-item index="/class">班级</el-menu-item>
         <el-menu-item index="/about">关于</el-menu-item>
       </el-menu>
       <AvatarBox />

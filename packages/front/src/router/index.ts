@@ -101,6 +101,31 @@ const routes: Array<RouteRecordRaw> = [
     ],
   },
   {
+    path: '/class',
+    children: [
+      {
+        path: '',
+        name: 'Class',
+        component: () => import('@/views/class/ClassPage.vue'),
+      },
+      {
+        path: 'setting',
+        name: 'ClassSetting',
+        component: () => import('@/views/class/ClassSettingPage.vue'),
+      },
+      {
+        path: 'create',
+        name: 'ClassCreate',
+        component: () => import('@/views/class/ClassCreatePage.vue'),
+      },
+      // {
+      //   path: 'manage/:id',
+      //   name: 'ClassManage',
+      //   component: () => import('@/views/class/ClassManagePage.vue'),
+      // },
+    ],
+  },
+  {
     path: '/:pathMatch(.*)*',
     name: 'NotFound',
     component: () => import('@/views/404/NotFoundPage.vue'),

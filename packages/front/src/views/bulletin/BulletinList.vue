@@ -1,16 +1,16 @@
 <template>
   <div class="bulletin-list">
     <el-table :data="bulletinData" style="width: 100%" class="table">
-      <el-table-column prop="title" label="标题" width="250">
+      <el-table-column prop="title" label="标题">
         <template #default="{ row }">
           <div @click="goToDetail(row.id)" class="title">
             {{ row.title }}
           </div>
         </template>
       </el-table-column>
-      <el-table-column prop="createTime" label="创建时间" width="150" />
-      <el-table-column prop="updateTime" label="更新时间" width="150" />
-      <el-table-column prop="author" label="作者" width="180" />
+      <el-table-column prop="createTime" label="创建时间" width="200" />
+      <el-table-column prop="updateTime" label="更新时间" width="200" />
+      <el-table-column prop="author" label="作者" width="200" />
       <el-table-column prop="operation" label="操作" width="150" v-admin>
         <template #default="{ row }">
           <el-button type="primary" size="small" @click="editBulletin(row.id)">
@@ -65,16 +65,15 @@ const editBulletin = (id: number) => {
 }
 
 // 删除公告
-const deleteBulletin = (id: number) => {
-  BulletinApi.deleteBulletin(id).then((res) => {
-    if (res.code === 0) {
-      changePage(page.value + 1, size.value)
-      message.success('删除成功')
-      return
-    }
+const deleteBulletin = async (id: number) => {
+  const res = await BulletinApi.deleteBulletin(id)
+  if (res.code === 0) {
+    changePage(page.value + 1, size.value)
+    message.success('删除成功')
+    return
+  }
 
-    message.error('删除失败')
-  })
+  message.error('删除失败')
 }
 
 const changePage = async (currentPage: number, pageSize: number) => {

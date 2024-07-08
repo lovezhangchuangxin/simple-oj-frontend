@@ -21,6 +21,9 @@
         <div @click="goToProblemManage" v-if="isAdmin(userStore.role)">
           <el-icon><Apple /></el-icon>题目管理
         </div>
+        <div @click="goToClassManager" v-if="isAdmin(userStore.role)">
+          <el-icon><Pear /></el-icon>班级管理
+        </div>
         <div @click="goToBulletinSetting" v-if="isAdmin(userStore.role)">
           <el-icon><ChatSquare /></el-icon>公告设置
         </div>
@@ -40,6 +43,7 @@ import {
   Apple,
   ChatSquare,
   CircleClose,
+  Pear,
   Setting,
 } from '@element-plus/icons-vue'
 import { useRouter } from 'vue-router'
@@ -55,6 +59,11 @@ const goToPersonSetting = () => {
 // 题目管理
 const goToProblemManage = () => {
   router.push('/problem/manage')
+}
+
+// 班级管理
+const goToClassManager = () => {
+  router.push('/class/setting')
 }
 
 // 设置公告

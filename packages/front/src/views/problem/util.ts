@@ -5,10 +5,10 @@ import { CodeExecuteStatus, ProblemBriefInfo } from '@simple-oj-frontend/api'
 export const statusColorMap: { [status in CodeExecuteStatus]: string } = {
   [CodeExecuteStatus.AC]: '#67c23a',
   [CodeExecuteStatus.WA]: '#f56c6c',
-  [CodeExecuteStatus.TLE]: '#f56c6c',
-  [CodeExecuteStatus.MLE]: '#f56c6c',
-  [CodeExecuteStatus.RE]: '#f56c6c',
-  [CodeExecuteStatus.CE]: '#f56c6c',
+  [CodeExecuteStatus.TLE]: '#2e468c',
+  [CodeExecuteStatus.MLE]: '#2e468c',
+  [CodeExecuteStatus.RE]: '#8e44ad',
+  [CodeExecuteStatus.CE]: '#f1c40f',
 }
 
 export const getProblemTableData = ({

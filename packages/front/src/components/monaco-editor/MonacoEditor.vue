@@ -4,7 +4,7 @@
 </template>
 
 <script setup lang="ts">
-import { KeyCode, KeyMod, editor } from 'monaco-editor'
+import { KeyCode, KeyMod, Range, editor } from 'monaco-editor'
 import {
   onBeforeUnmount,
   onMounted,
@@ -79,6 +79,24 @@ onMounted(() => {
     emit('update:modelValue', codeEditor.getValue())
   })
 
+  // 选中的行背景设为灰色，没选中的恢复默认色
+  codeEditor.onDidChangeCursorPosition((e) => {
+    const value = codeEditor.createDecorationsCollection([
+      {
+        range: new Range(e.position.lineNumber, 1, e.position.lineNumber, 1),
+        options: {
+          isWholeLine: true,
+          className: 'selected-line',
+        },
+      },
+    ])
+
+    console.log(value)
+    setTimeout(() => {
+      value.clear()
+    }, 1000)
+  })
+
   watchEffect(() => {
     codeEditor.updateOptions({
       theme: theme.value || '',
@@ -145,5 +163,10 @@ onBeforeUnmount(() => {
 .editor-container {
   width: 100%;
   height: 100%;
+}
+</style>
+<style>
+.selected-line {
+  background-color: #f0f0f0;
 }
 </style>

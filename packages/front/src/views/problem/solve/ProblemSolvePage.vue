@@ -48,7 +48,9 @@
                   >
                     <div>
                       <h4>
-                        {{ judgeCodeExecuteStatus(result.stat) }}
+                        {{
+                          CodeExecuteStatus[judgeCodeExecuteStatus(result.stat)]
+                        }}
                       </h4>
                       <p>
                         {{ result.stat.real_time }}ms
@@ -136,6 +138,7 @@ import {
 } from '@/components/monaco-editor/constant'
 import { generateMd } from '../create/generateMd'
 import {
+  CodeExecuteStatus,
   CodeResult,
   GPTApi,
   Problem,
@@ -200,6 +203,8 @@ const submitCode = async () => {
   )
 
   loading.value = false
+
+  console.log(res)
 
   if (res.code !== 0) {
     message.error(res.msg)
@@ -317,6 +322,7 @@ const getDiffHtml = (output: string, expected: string) => {
         text-align: center;
         border: 1px solid #e0e0e0;
         border-radius: 5px;
+        color: #fff;
       }
     }
 
